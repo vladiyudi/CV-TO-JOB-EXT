@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CV Job Matcher</title>
+  <style>
+    body { width: 300px; padding: 10px; font-family: Arial, sans-serif; }
+    button { margin: 5px 0; width: 100%; padding: 5px; }
+    #status { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>CV Job Matcher</h2>
+  <div id="loginSection">
+    <button id="loginButton">Login with Google</button>
+  </div>
+  <div id="actionSection" style="display: none;">
+    <button id="captureButton">Capture Job Description</button>
+    <button id="matchButton">Match CV to Job</button>
+    <div id="status"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{personalInfo.name}} - CV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            text-transform: uppercase;
+        }
+        .header h2 {
+            margin: 5px 0 0;
+            font-size: 20px;
+            text-transform: uppercase;
+        }
+        .content {
+            display: flex;
+            gap: 30px;
+        }
+        .left-column {
+            flex: 1;
+        }
+        .right-column {
+            flex: 2;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .contact-info p {
+            margin: 5px 0;
+        }
+        .skills-category {
+            margin-bottom: 15px;
+        }
+        .skills-category h4 {
+            margin: 0 0 5px;
+            font-weight: bold;
+        }
+        .skills-category ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .skills-category li {
+            margin-bottom: 3px;
+        }
+        .experience-item {
+            margin-bottom: 15px;
+        }
+        .experience-item h4 {
+            margin: 0;
+            font-weight: bold;
+        }
+        .experience-item p {
+            margin: 3px 0;
+            font-style: italic;
+        }
+        .experience-item ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        .education {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .education-item {
+            flex: 1;
+        }
+        .education-item h4 {
+            margin: 0;
+            font-weight: bold;
+        }
+        .education-item p {
+            margin: 3px 0;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{personalInfo.name}}</h1>
+        <h2>{{personalInfo.title}}</h2>
+    </div>
+    
+    <div class="content">
+        <div class="left-column">
+            <div class="section-title">CONTACT</div>
+            <div class="contact-info">
+                <p>{{personalInfo.phone}}</p>
+                <p>{{personalInfo.email}}</p>
+            </div>
+            
+            <div class="section-title">SKILLS</div>
+            {{#each skills}}
+            <div class="skills-category">
+                <h4>{{category}}</h4>
+                <ul>
+                    {{#each list}}
+                    <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+                {{#unless @last}}<hr>{{/unless}}
+            </div>
+            {{/each}}
+        </div>
+        
+        <div class="right-column">
+            <div class="section-title">PROFILE</div>
+            <p>{{professionalSummary}}</p>
+            
+            <div class="section-title">EXPERIENCE</div>
+            {{#each workExperience}}
+            <div class="experience-item">
+                <h4>{{jobTitle}}</h4>
+                <p>{{company}} | {{startDate}} - {{endDate}}</p>
+                <ul>
+                    {{#each responsibilities}}
+                    <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+    
+    <div class="section-title">EDUCATION</div>
+    <div class="education">
+        {{#each education}}
+        <div class="education-item">
+            <h4>{{institution}}</h4>
+            <p>{{degree}}</p>
+        </div>
+        {{/each}}
+    </div>
+</body>
+</html>
