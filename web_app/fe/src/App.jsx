@@ -75,19 +75,17 @@ const MainApp = () => {
     fetchJobDescription();
     fetchCVText();
 
-    const queryParams = new URLSearchParams(location.search);
-    const autoMatch = queryParams.get('autoMatch');
-    
-    if (autoMatch === 'true') {
-      handleSubmit();
-    }
-
     // Set up listener for Chrome extension messages
     if (chrome && chrome.runtime && chrome.runtime.onMessageExternal) {
       chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
-        if (sender.id === EXTENSION_ID && request.action === 'updateJobDescription') {
-          setJob(request.jobDescription);
-          sendResponse({ success: true });
+        if (sender.id === EXTENSION_ID) {
+          if (request.action === 'updateJobDescription') {
+            handleJobChange(request.jobDescription);
+            sendResponse({ success: true });
+          } else if (request.action === 'matchCVToJob') {
+            handleSubmit();
+            sendResponse({ success: true });
+          }
         }
       });
     }
@@ -98,7 +96,7 @@ const MainApp = () => {
         chrome.runtime.onMessageExternal.removeListener();
       }
     };
-  }, [location]);
+  }, []);
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -135,6 +133,15 @@ const MainApp = () => {
     }
   };
 
+  const handleJobChange = async (newJob) => {
+    setJob(newJob);
+    try {
+      await axios.post(`${apiEndpoint}/api/job-description`, { jobDescription: newJob });
+    } catch (error) {
+      console.error('Error saving job description:', error);
+    }
+  };
+
   return (
     <div className="app-container">
       <div className="header">
@@ -152,7 +159,7 @@ const MainApp = () => {
       </div>
       <div className="input-container-wrapper">
         <CVInput cv={cv} setCV={handleCVChange} />
-        <JobInput job={job} setJob={setJob} />
+        <JobInput job={job} setJob={handleJobChange} />
       </div>
       <div className="editable-cv-wrapper" ref={editableCVRef}>
         <h2 className="section-title">CV Editor (A4 Format)</h2>
