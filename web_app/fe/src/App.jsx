@@ -36,7 +36,6 @@ const ProtectedRoute = ({ children }) => {
 const MainApp = () => {
   const [cv, setCV] = useState('');
   const [job, setJob] = useState('');
-  const [extensionJobDescription, setExtensionJobDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [rewrittenCV, setRewrittenCV] = useState('');
   const editableCVRef = useRef(null);
@@ -54,7 +53,6 @@ const MainApp = () => {
       try {
         const response = await axios.get(`${apiEndpoint}/api/job-description`);
         if (response.data.jobDescription) {
-          setExtensionJobDescription(response.data.jobDescription);
           setJob(response.data.jobDescription);
         }
       } catch (error) {
@@ -69,6 +67,19 @@ const MainApp = () => {
     if (autoMatch === 'true') {
       handleSubmit();
     }
+
+    // Listen for messages from the Chrome extension
+    const handleExtensionMessage = (event) => {
+      if (event.data.action === 'updateJobDescription') {
+        setJob(event.data.jobDescription);
+      }
+    };
+
+    window.addEventListener('message', handleExtensionMessage);
+
+    return () => {
+      window.removeEventListener('message', handleExtensionMessage);
+    };
   }, [location]);
 
   const handleSubmit = async () => {
@@ -76,7 +87,7 @@ const MainApp = () => {
     try {
       const response = await axios.post(`${apiEndpoint}/matchJobCv`, { 
         cv, 
-        job: extensionJobDescription || job 
+        job
       });
       console.log('response.data.rewrittenCV', response.data);
       setRewrittenCV(response.data.rewrittenCV);
@@ -116,12 +127,6 @@ const MainApp = () => {
         <CVInput cv={cv} setCV={setCV} />
         <JobInput job={job} setJob={setJob} />
       </div>
-      {extensionJobDescription && (
-        <div className="extension-job-description">
-          <h3>Job Description from Extension:</h3>
-          <p>{extensionJobDescription}</p>
-        </div>
-      )}
       <div className="editable-cv-wrapper" ref={editableCVRef}>
         <h2 className="section-title">CV Editor (A4 Format)</h2>
         <EditableCV initialCV={rewrittenCV} apiEndpoint={apiEndpoint} />

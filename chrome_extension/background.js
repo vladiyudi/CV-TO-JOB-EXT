@@ -66,6 +66,15 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
+        // Send message to the webapp
+        chrome.tabs.query({url: `${WEBAPP_URL}/*`}, function(tabs) {
+          if (tabs.length > 0) {
+            chrome.tabs.sendMessage(tabs[0].id, {
+              action: 'updateJobDescription',
+              jobDescription: request.jobDescription
+            });
+          }
+        });
         sendResponse({ success: true });
       } else {
         sendResponse({ success: false, error: data.message || 'Failed to send job description to webapp' });
