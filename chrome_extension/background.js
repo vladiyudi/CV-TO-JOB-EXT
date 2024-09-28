@@ -16,6 +16,28 @@ function sendMessageToPopup(message) {
   chrome.runtime.sendMessage(message);
 }
 
+function findOrCreateWebappTab() {
+  return new Promise((resolve) => {
+    const url = new URL(WEBAPP_URL);
+    url.searchParams.append('refreshJob', 'true');
+    url.searchParams.append('timestamp', Date.now()); // Add a timestamp to ensure the URL is always unique
+
+    chrome.tabs.query({url: `${WEBAPP_URL}/*`}, function(tabs) {
+      if (tabs.length > 0) {
+        // Webapp tab exists, update and focus it
+        chrome.tabs.update(tabs[0].id, {active: true, url: url.toString()}, function(tab) {
+          resolve({success: true, newTabCreated: false, tabId: tab.id});
+        });
+      } else {
+        // Webapp tab doesn't exist, create a new one
+        chrome.tabs.create({url: url.toString()}, function(tab) {
+          resolve({success: true, newTabCreated: true, tabId: tab.id});
+        });
+      }
+    });
+  });
+}
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'login') {
     chrome.identity.getAuthToken({ interactive: true }, function(token) {
@@ -66,17 +88,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        // Send message to the webapp
-        chrome.runtime.sendMessage(chrome.runtime.id, {
-          action: 'updateJobDescription',
-          jobDescription: request.jobDescription
-        }, function(response) {
-          if (chrome.runtime.lastError) {
-            console.error('Error sending message to webapp:', chrome.runtime.lastError);
-          } else {
-            console.log('Message sent to webapp successfully');
-          }
-        });
         sendResponse({ success: true });
       } else {
         sendResponse({ success: false, error: data.message || 'Failed to send job description to webapp' });
@@ -89,9 +100,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 
-  if (request.action === 'matchCV') {
-    chrome.tabs.create({ url: `${WEBAPP_URL}?autoMatch=true` }, (tab) => {
-      sendResponse({ success: true });
+  if (request.action === 'openWebapp') {
+    findOrCreateWebappTab().then(result => {
+      if (result.success) {
+        sendResponse({ success: true, newTabCreated: result.newTabCreated });
+      } else {
+        sendResponse({ success: false, error: 'Failed to open webapp' });
+      }
     });
     return true;
   }

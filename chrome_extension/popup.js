@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       if (response && response.success && response.jobDescription) {
         const firstTwoLines = response.jobDescription.split('\n').slice(0, 2).join('\n');
-        statusDiv.textContent = 'Scraping complete: ' + firstTwoLines + '...';
+        statusDiv.textContent = 'Job description captured successfully: ' + firstTwoLines + '...';
         chrome.runtime.sendMessage({
           action: 'sendToWebapp',
           jobDescription: response.jobDescription
@@ -80,18 +80,18 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         });
       } else {
-        statusDiv.textContent = 'Failed to scrape job description: ' + (response ? response.error : 'Unknown error');
+        statusDiv.textContent = 'Failed to capture job description: ' + (response ? response.error : 'Unknown error');
       }
     });
   }
 
   matchButton.addEventListener('click', function() {
-    statusDiv.textContent = 'Redirecting to webapp for CV matching...';
-    chrome.runtime.sendMessage({action: 'matchCV'}, function(response) {
+    statusDiv.textContent = 'Opening webapp...';
+    chrome.runtime.sendMessage({action: 'openWebapp'}, function(response) {
       if (response && response.success) {
         window.close(); // Close the popup after redirecting
       } else {
-        statusDiv.textContent = 'Failed to initiate CV matching: ' + (response ? response.error : 'Unknown error');
+        statusDiv.textContent = 'Failed to open webapp: ' + (response ? response.error : 'Unknown error');
       }
     });
   });

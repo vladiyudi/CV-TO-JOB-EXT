@@ -38,6 +38,7 @@ const MainApp = () => {
   const [cv, setCV] = useState('');
   const [job, setJob] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isJobLoading, setIsJobLoading] = useState(false);
   const [rewrittenCV, setRewrittenCV] = useState('');
   const editableCVRef = useRef(null);
   const navigate = useNavigate();
@@ -49,54 +50,41 @@ const MainApp = () => {
     }
   }, [rewrittenCV]);
 
-  useEffect(() => {
-    const fetchJobDescription = async () => {
-      try {
-        const response = await axios.get(`${apiEndpoint}/api/job-description`);
-        if (response.data.jobDescription) {
-          setJob(response.data.jobDescription);
-        }
-      } catch (error) {
-        console.error('Error fetching job description:', error);
+  const fetchJobDescription = async () => {
+    setIsJobLoading(true);
+    try {
+      const response = await axios.get(`${apiEndpoint}/api/job-description`);
+      if (response.data.jobDescription) {
+        setJob(response.data.jobDescription);
       }
-    };
-
-    const fetchCVText = async () => {
-      try {
-        const response = await axios.get(`${apiEndpoint}/api/cv-text`);
-        if (response.data.cvText) {
-          setCV(response.data.cvText);
-        }
-      } catch (error) {
-        console.error('Error fetching CV text:', error);
-      }
-    };
-
-    fetchJobDescription();
-    fetchCVText();
-
-    // Set up listener for Chrome extension messages
-    if (chrome && chrome.runtime && chrome.runtime.onMessageExternal) {
-      chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
-        if (sender.id === EXTENSION_ID) {
-          if (request.action === 'updateJobDescription') {
-            handleJobChange(request.jobDescription);
-            sendResponse({ success: true });
-          } else if (request.action === 'matchCVToJob') {
-            handleSubmit();
-            sendResponse({ success: true });
-          }
-        }
-      });
+    } catch (error) {
+      console.error('Error fetching job description:', error);
+    } finally {
+      setIsJobLoading(false);
     }
+  };
 
-    return () => {
-      // Clean up listener if necessary
-      if (chrome && chrome.runtime && chrome.runtime.onMessageExternal) {
-        chrome.runtime.onMessageExternal.removeListener();
+  const fetchCVText = async () => {
+    try {
+      const response = await axios.get(`${apiEndpoint}/api/cv-text`);
+      if (response.data.cvText) {
+        setCV(response.data.cvText);
       }
-    };
-  }, []);
+    } catch (error) {
+      console.error('Error fetching CV text:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCVText();
+    
+    const params = new URLSearchParams(location.search);
+    if (params.get('refreshJob') === 'true') {
+      fetchJobDescription();
+      // Remove the query parameter after fetching
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location]);
 
   const handleSubmit = async () => {
     setIsLoading(true);
@@ -159,7 +147,7 @@ const MainApp = () => {
       </div>
       <div className="input-container-wrapper">
         <CVInput cv={cv} setCV={handleCVChange} />
-        <JobInput job={job} setJob={handleJobChange} />
+        <JobInput job={job} setJob={handleJobChange} isLoading={isJobLoading} />
       </div>
       <div className="editable-cv-wrapper" ref={editableCVRef}>
         <h2 className="section-title">CV Editor (A4 Format)</h2>
