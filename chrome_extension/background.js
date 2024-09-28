@@ -67,12 +67,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     .then(data => {
       if (data.success) {
         // Send message to the webapp
-        chrome.tabs.query({url: `${WEBAPP_URL}/*`}, function(tabs) {
-          if (tabs.length > 0) {
-            chrome.tabs.sendMessage(tabs[0].id, {
-              action: 'updateJobDescription',
-              jobDescription: request.jobDescription
-            });
+        chrome.runtime.sendMessage(chrome.runtime.id, {
+          action: 'updateJobDescription',
+          jobDescription: request.jobDescription
+        }, function(response) {
+          if (chrome.runtime.lastError) {
+            console.error('Error sending message to webapp:', chrome.runtime.lastError);
+          } else {
+            console.log('Message sent to webapp successfully');
           }
         });
         sendResponse({ success: true });

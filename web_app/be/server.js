@@ -24,7 +24,8 @@ const User = mongoose.model('User', new mongoose.Schema({
   googleId: String,
   displayName: String,
   email: String,
-  jobDescription: String
+  jobDescription: String,
+  cvText: String
 }));
 
 // Passport config
@@ -147,6 +148,27 @@ app.get('/api/job-description', isAuthenticated, async (req, res) => {
     res.json({ success: true, jobDescription: user.jobDescription });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error retrieving job description' });
+  }
+});
+
+// New endpoint to save CV text
+app.post('/api/cv-text', isAuthenticated, async (req, res) => {
+  const { cvText } = req.body;
+  try {
+    await User.findByIdAndUpdate(req.user.id, { cvText });
+    res.json({ success: true, message: 'CV text saved successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error saving CV text' });
+  }
+});
+
+// New endpoint to get CV text
+app.get('/api/cv-text', isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    res.json({ success: true, cvText: user.cvText });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error retrieving CV text' });
   }
 });
 

@@ -8,6 +8,7 @@ import Login from './components/Login';
 import './styles.css';
 
 const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
+const EXTENSION_ID = import.meta.env.VITE_CHROME_EXTENSION_ID;
 
 axios.defaults.withCredentials = true;
 
@@ -59,7 +60,20 @@ const MainApp = () => {
         console.error('Error fetching job description:', error);
       }
     };
+
+    const fetchCVText = async () => {
+      try {
+        const response = await axios.get(`${apiEndpoint}/api/cv-text`);
+        if (response.data.cvText) {
+          setCV(response.data.cvText);
+        }
+      } catch (error) {
+        console.error('Error fetching CV text:', error);
+      }
+    };
+
     fetchJobDescription();
+    fetchCVText();
 
     const queryParams = new URLSearchParams(location.search);
     const autoMatch = queryParams.get('autoMatch');
@@ -68,17 +82,21 @@ const MainApp = () => {
       handleSubmit();
     }
 
-    // Listen for messages from the Chrome extension
-    const handleExtensionMessage = (event) => {
-      if (event.data.action === 'updateJobDescription') {
-        setJob(event.data.jobDescription);
-      }
-    };
-
-    window.addEventListener('message', handleExtensionMessage);
+    // Set up listener for Chrome extension messages
+    if (chrome && chrome.runtime && chrome.runtime.onMessageExternal) {
+      chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
+        if (sender.id === EXTENSION_ID && request.action === 'updateJobDescription') {
+          setJob(request.jobDescription);
+          sendResponse({ success: true });
+        }
+      });
+    }
 
     return () => {
-      window.removeEventListener('message', handleExtensionMessage);
+      // Clean up listener if necessary
+      if (chrome && chrome.runtime && chrome.runtime.onMessageExternal) {
+        chrome.runtime.onMessageExternal.removeListener();
+      }
     };
   }, [location]);
 
@@ -108,6 +126,15 @@ const MainApp = () => {
     }
   };
 
+  const handleCVChange = async (newCV) => {
+    setCV(newCV);
+    try {
+      await axios.post(`${apiEndpoint}/api/cv-text`, { cvText: newCV });
+    } catch (error) {
+      console.error('Error saving CV text:', error);
+    }
+  };
+
   return (
     <div className="app-container">
       <div className="header">
@@ -124,7 +151,7 @@ const MainApp = () => {
         </button>
       </div>
       <div className="input-container-wrapper">
-        <CVInput cv={cv} setCV={setCV} />
+        <CVInput cv={cv} setCV={handleCVChange} />
         <JobInput job={job} setJob={setJob} />
       </div>
       <div className="editable-cv-wrapper" ref={editableCVRef}>
