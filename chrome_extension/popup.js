@@ -31,28 +31,59 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   captureButton.addEventListener('click', function() {
-    statusDiv.textContent = 'Capturing job description...';
+    statusDiv.textContent = 'Checking content script...';
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, {action: 'scrapeJobDescription'}, function(response) {
-        if (response && response.success && response.jobDescription) {
-          const firstTwoLines = response.jobDescription.split('\n').slice(0, 2).join('\n');
-          statusDiv.textContent = 'Scraping complete: ' + firstTwoLines + '...';
-          chrome.runtime.sendMessage({
-            action: 'sendToWebapp',
-            jobDescription: response.jobDescription
-          }, function(sendResponse) {
-            if (sendResponse && sendResponse.success) {
-              statusDiv.textContent += '\nJob description sent to webapp successfully.';
-            } else {
-              statusDiv.textContent += '\nFailed to send job description to webapp: ' + (sendResponse ? sendResponse.error : 'Unknown error');
-            }
-          });
-        } else {
-          statusDiv.textContent = 'Failed to scrape job description: ' + (response ? response.error : 'Unknown error');
-        }
-      });
+      const tab = tabs[0];
+      if (tab.url.startsWith('https://www.linkedin.com/jobs/')) {
+        pingContentScript(tab, function(pong) {
+          if (pong) {
+            statusDiv.textContent = 'Content script ready. Capturing job description...';
+            sendMessageToContentScript(tab);
+          } else {
+            statusDiv.textContent = 'Error: Content script not accessible. Please refresh the page and try again.';
+          }
+        });
+      } else {
+        statusDiv.textContent = 'Error: Please navigate to a LinkedIn job page before capturing.';
+      }
     });
   });
+
+  function pingContentScript(tab, callback) {
+    chrome.tabs.sendMessage(tab.id, {action: 'ping'}, function(response) {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+        callback(false);
+      } else {
+        callback(response && response.action === 'pong');
+      }
+    });
+  }
+
+  function sendMessageToContentScript(tab) {
+    chrome.tabs.sendMessage(tab.id, {action: 'scrapeJobDescription'}, function(response) {
+      if (chrome.runtime.lastError) {
+        statusDiv.textContent = 'Error: ' + chrome.runtime.lastError.message;
+        return;
+      }
+      if (response && response.success && response.jobDescription) {
+        const firstTwoLines = response.jobDescription.split('\n').slice(0, 2).join('\n');
+        statusDiv.textContent = 'Scraping complete: ' + firstTwoLines + '...';
+        chrome.runtime.sendMessage({
+          action: 'sendToWebapp',
+          jobDescription: response.jobDescription
+        }, function(sendResponse) {
+          if (sendResponse && sendResponse.success) {
+            statusDiv.textContent += '\nJob description sent to webapp successfully.';
+          } else {
+            statusDiv.textContent += '\nFailed to send job description to webapp: ' + (sendResponse ? sendResponse.error : 'Unknown error');
+          }
+        });
+      } else {
+        statusDiv.textContent = 'Failed to scrape job description: ' + (response ? response.error : 'Unknown error');
+      }
+    });
+  }
 
   matchButton.addEventListener('click', function() {
     statusDiv.textContent = 'Redirecting to webapp for CV matching...';

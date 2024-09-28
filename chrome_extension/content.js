@@ -1,3 +1,5 @@
+console.log('Content script loaded');
+
 function scrapeJobDescription() {
   const possibleSelectors = [
     '.description__text',
@@ -33,7 +35,10 @@ function scrapeJobDescription() {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'scrapeJobDescription') {
+  console.log('Message received in content script:', request);
+  if (request.action === 'ping') {
+    sendResponse({action: 'pong'});
+  } else if (request.action === 'scrapeJobDescription') {
     try {
       const jobDescription = scrapeJobDescription();
       if (jobDescription) {
