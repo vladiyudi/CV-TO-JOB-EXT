@@ -7,8 +7,13 @@ import EditableCV from './components/EditableCV';
 import Login from './components/Login';
 import './styles.css';
 
-const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
+// const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
 const EXTENSION_ID = import.meta.env.VITE_CHROME_EXTENSION_ID;
+// const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
+
+const apiEndpoint = 'https://supercvbackend-47779369171.europe-west3.run.app';
+
+console.log('apiEndpoint', apiEndpoint);
 
 axios.defaults.withCredentials = true;
 

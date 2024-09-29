@@ -2,21 +2,28 @@
 <html>
 <head>
   <title>CV Job Matcher</title>
-  <style>
-    body { width: 300px; padding: 10px; font-family: Arial, sans-serif; }
-    button { margin: 5px 0; width: 100%; padding: 5px; }
-    #status { margin-top: 10px; }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-  <h2>CV Job Matcher</h2>
-  <div id="loginSection">
-    <button id="loginButton">Login with Google</button>
-  </div>
-  <div id="actionSection" style="display: none;">
-    <button id="captureButton">Capture Job Description</button>
-    <button id="matchButton">Match CV to Job</button>
-    <div id="status"></div>
+  <div class="container">
+    <div class="header">
+      <img src="images/logo48.png" alt="CV Job Matcher Logo" class="logo">
+      <div class="app-info">
+        <h1 class="app-name">CV Job Matcher</h1>
+        <p class="app-description">Match your CV to job descriptions</p>
+      </div>
+    </div>
+    <div id="loginSection" class="section">
+      <button id="loginButton" class="button button-primary">Login with Google</button>
+    </div>
+    <div id="actionSection" class="section" style="display: none;">
+      <button id="captureButton" class="button button-secondary">Capture Job Description</button>
+      <button id="matchButton" class="button button-primary">Match CV to Job</button>
+      <div id="status" class="status"></div>
+    </div>
   </div>
   <script src="popup.js"></script>
 </body>

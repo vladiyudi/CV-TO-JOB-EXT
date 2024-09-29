@@ -67,16 +67,21 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
       if (response && response.success && response.jobDescription) {
-        const firstTwoLines = response.jobDescription.split('\n').slice(0, 2).join('\n');
-        statusDiv.textContent = 'Job description captured successfully: ' + firstTwoLines + '...';
+        const maxLength = 500; // Set a maximum length for the displayed job description
+        let displayedText = response.jobDescription.length > maxLength 
+          ? response.jobDescription.substring(0, maxLength) + '...'
+          : response.jobDescription;
+        
+        statusDiv.textContent = 'Job description captured successfully:\n\n' + displayedText;
+        
         chrome.runtime.sendMessage({
           action: 'sendToWebapp',
           jobDescription: response.jobDescription
         }, function(sendResponse) {
           if (sendResponse && sendResponse.success) {
-            statusDiv.textContent += '\nJob description sent to webapp successfully.';
+            statusDiv.textContent += '\n\nJob description sent to webapp successfully.';
           } else {
-            statusDiv.textContent += '\nFailed to send job description to webapp: ' + (sendResponse ? sendResponse.error : 'Unknown error');
+            statusDiv.textContent += '\n\nFailed to send job description to webapp: ' + (sendResponse ? sendResponse.error : 'Unknown error');
           }
         });
       } else {

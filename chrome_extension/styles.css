@@ -1,0 +1,126 @@
+body {
+  width: 350px;
+  font-family: 'Barlow Condensed', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #FFFFFF;
+  color: #333333;
+}
+
+.container {
+  padding: 20px;
+  background-color: #FFFFFF;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  font-size: 24px;
+  color: #333333;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.section {
+  margin-bottom: 15px;
+}
+
+.button {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Barlow Condensed', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+  text-align: center;
+}
+
+.button:active {
+  transform: scale(0.98);
+}
+
+.button-primary {
+  background-color: #8000FF; /* Purple from the color palette */
+  color: #FFFFFF;
+}
+
+.button-primary:hover {
+  background-color: #6600CC; /* Darker purple on hover */
+}
+
+.button-secondary {
+  background-color: #FFA500; /* Orange from the color palette */
+  color: #FFFFFF;
+}
+
+.button-secondary:hover {
+  background-color: #FF8C00; /* Darker orange on hover */
+}
+
+.status {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #F5F5F5;
+  border-radius: 15px;
+  font-size: 14px;
+  color: #333333;
+  min-height: 100px;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #E0E0E0;
+}
+
+/* Scrollbar styles for WebKit browsers */
+.status::-webkit-scrollbar {
+  width: 8px;
+}
+
+.status::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-radius: 4px;
+}
+
+.status::-webkit-scrollbar-thumb {
+  background: #FFA500; /* Orange from the color palette */
+  border-radius: 4px;
+}
+
+.status::-webkit-scrollbar-thumb:hover {
+  background: #FF8C00; /* Darker orange on hover */
+}
+
+/* Additional styles for a cleaner look */
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+.app-info {
+  flex-grow: 1;
+}
+
+.app-name {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.app-description {
+  font-size: 14px;
+  color: #666666;
+  margin: 0;
+}

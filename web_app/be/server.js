@@ -28,11 +28,14 @@ const User = mongoose.model('User', new mongoose.Schema({
   cvText: String
 }));
 
+console.log(process.env);
+
 // Passport config
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: "/auth/google/callback"
+  callbackURL: `${process.env.BACKEND_URL}/auth/google/callback`
+  // callbackURL: `/auth/google/callback`
 },
 async (accessToken, refreshToken, profile, done) => {
   try {
@@ -71,7 +74,12 @@ app.use(express.json());
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    sameSite: 'none',
+    secure: true,
+    httpOnly: true,
+  }
 }));
 app.use(passport.initialize());
 app.use(passport.session());

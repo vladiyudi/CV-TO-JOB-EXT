@@ -4,7 +4,10 @@ import axios from 'axios';
 
 const Login = () => {
   const navigate = useNavigate();
-  const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
+  // const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
+  const apiEndpoint = 'https://supercvbackend-47779369171.europe-west3.run.app';
+
+
 
   useEffect(() => {
     // Check if this is a login attempt from the Chrome extension
