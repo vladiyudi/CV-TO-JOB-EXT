@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const { matchJobCvRaw } = require('./middleware/matchJobCv');
 const { createCV } = require('./middleware/createCVJSON');
 const { cvToHtml } = require('./middleware/cvToHtml');
@@ -14,7 +15,8 @@ const { cvToHtml } = require('./middleware/cvToHtml');
 const app = express();
 const port = process.env.PORT || 8080;
 
-// MongoDB connection
+
+
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Error connecting to MongoDB:', err));
@@ -28,17 +30,15 @@ const User = mongoose.model('User', new mongoose.Schema({
   cvText: String
 }));
 
-console.log(process.env);
-
 // Passport config
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: `${process.env.BACKEND_URL}/auth/google/callback`
-  // callbackURL: `/auth/google/callback`
 },
 async (accessToken, refreshToken, profile, done) => {
   try {
+    console.log('Google Strategy callback', { profileId: profile.id, email: profile.emails[0].value });
     let user = await User.findOne({ googleId: profile.id });
     if (!user) {
       user = await User.create({
@@ -46,63 +46,121 @@ async (accessToken, refreshToken, profile, done) => {
         displayName: profile.displayName,
         email: profile.emails[0].value
       });
+      console.log('New user created', { userId: user._id });
+    } else {
+      console.log('Existing user found', { userId: user._id });
     }
     return done(null, user);
   } catch (error) {
+    console.error('Error in Google Strategy callback', error);
     return done(error, null);
   }
 }));
 
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  console.log('Serializing user', { userId: user._id });
+  done(null, user._id);
 });
 
 passport.deserializeUser(async (id, done) => {
   try {
+    console.log('Deserializing user', { userId: id });
     const user = await User.findById(id);
+    if (user) {
+      console.log('User found during deserialization', { userId: user._id });
+    } else {
+      console.log('User not found during deserialization');
+    }
     done(null, user);
   } catch (error) {
+    console.error('Error deserializing user', error);
     done(error, null);
   }
 });
 
-app.use(cors({
+const corsOptions = {
   origin: [process.env.FRONTEND_URL, `chrome-extension://${process.env.CHROME_EXTENSION_ID}`],
-  credentials: true
-}));
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
+
+// Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({ 
+    mongoUrl: process.env.MONGODB_URI,
+    collectionName: 'sessions'
+  }),
   cookie: {
-    sameSite: 'none',
-    secure: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     httpOnly: true,
+    // secure:false,
+    secure: process.env.NODE_ENV === 'production', // set to true if your using https
+    sameSite: "lax"
   }
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use((req, res, next) => {
+  console.log('Incoming request:');
+  console.log('URL:', req.url);
+  console.log('Method:', req.method);
+  console.log('Headers:', req.headers);
+  console.log('Cookies:', req.cookies);
+  console.log('Session:', req.session);
+  console.log('User:', req.user);
+  next();
+});
+
+// Logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url} - User: ${req.user ? req.user._id : 'Not authenticated'}`);
+  console.log('Session ID:', req.sessionID);
+  console.log('Session:', req.session);
+  next();
+});
+
 // Auth routes
 app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] }));
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
 
 app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', { failureRedirect: `${process.env.FRONTEND_URL}/login` }),
   (req, res) => {
-    res.redirect(process.env.FRONTEND_URL);
-  });
+    console.log('Google Auth successful, redirecting to frontend');
+    console.log('Session after auth:', req.session);
+    console.log('User in session after auth:', req.user);
+    // console.log('User in session after auth:', req.user);
+    res.redirect(`${process.env.FRONTEND_URL}/login?authSuccess=true`);
+  }
+);
 
 app.get('/api/user', (req, res) => {
+  console.log('User info requested', { user: req.user ? req.user._id : 'Not authenticated' });
+  console.log('Session:', req.session);
+  console.log('User:', req.user);
   res.json(req.user || null);
 });
 
 app.get('/api/logout', (req, res) => {
+  console.log('Logout requested', { userId: req.user ? req.user._id : 'Not authenticated',
+    session: req.session,
+    cookies: req.cookies
+   });
   req.logout((err) => {
     if (err) {
+      console.error('Error during logout', err);
       return res.status(500).json({ message: 'Error logging out' });
     }
+    console.log('Logout successful');
     res.json({ message: 'Logged out successfully' });
   });
 });
@@ -112,31 +170,9 @@ const isAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
   }
+  console.log('Unauthorized access attempt');
   res.status(401).json({ message: 'Unauthorized' });
 };
-
-// Updated Google authentication for extension
-app.post('/api/auth/google', async (req, res) => {
-  const { email, name, picture } = req.body;
-  try {
-    let user = await User.findOne({ email: email });
-    if (!user) {
-      user = await User.create({
-        email: email,
-        displayName: name,
-        googleId: email // Using email as googleId for simplicity
-      });
-    }
-    req.login(user, (err) => {
-      if (err) {
-        return res.status(500).json({ success: false, message: 'Error logging in' });
-      }
-      return res.json({ success: true, user });
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Error during authentication' });
-  }
-});
 
 // Endpoint to receive job description from extension
 app.post('/api/job-description', isAuthenticated, async (req, res) => {
@@ -149,15 +185,6 @@ app.post('/api/job-description', isAuthenticated, async (req, res) => {
   }
 });
 
-// Endpoint to get job description
-app.get('/api/job-description', isAuthenticated, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    res.json({ success: true, jobDescription: user.jobDescription });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Error retrieving job description' });
-  }
-});
 
 // New endpoint to save CV text
 app.post('/api/cv-text', isAuthenticated, async (req, res) => {
@@ -170,15 +197,6 @@ app.post('/api/cv-text', isAuthenticated, async (req, res) => {
   }
 });
 
-// New endpoint to get CV text
-app.get('/api/cv-text', isAuthenticated, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    res.json({ success: true, cvText: user.cvText });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Error retrieving CV text' });
-  }
-});
 
 app.post('/matchJobCv', isAuthenticated, async (req, res, next) => {
   if (req.query.autoMatch === 'true') {
@@ -197,6 +215,11 @@ app.post('/matchJobCv', isAuthenticated, async (req, res, next) => {
 }, matchJobCvRaw, createCV);
 
 app.post('/generatePdf', isAuthenticated, cvToHtml);  
+
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({ message: 'An unexpected error occurred' });
+});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

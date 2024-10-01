@@ -7,11 +7,11 @@ import EditableCV from './components/EditableCV';
 import Login from './components/Login';
 import './styles.css';
 
-// const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
+console.log('Build-time API Endpoint:', import.meta.env.VITE_API_ENDPOINT);
 const EXTENSION_ID = import.meta.env.VITE_CHROME_EXTENSION_ID;
-// const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
+//  const apiEndpoint = 'http://localhost/api'
 
-const apiEndpoint = 'https://supercvbackend-47779369171.europe-west3.run.app';
+const apiEndpoint = import.meta.env.VITE_API_ENDPOINT
 
 console.log('apiEndpoint', apiEndpoint);
 
@@ -19,24 +19,28 @@ axios.defaults.withCredentials = true;
 
 const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const response = await axios.get(`${apiEndpoint}/api/user`);
         setIsAuthenticated(!!response.data);
+        if (!response.data) {
+          navigate('/login');
+        }
       } catch (error) {
         setIsAuthenticated(false);
+        navigate('/login');
       }
     };
     checkAuth();
-  }, []);
+  }, [navigate]);
 
   if (isAuthenticated === null) {
     return <div>Loading...</div>;
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  return isAuthenticated ? children : null;
 };
 
 const MainApp = () => {
@@ -166,7 +170,7 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login apiEndpoint={apiEndpoint}/>} />
         <Route
           path="/"
           element={

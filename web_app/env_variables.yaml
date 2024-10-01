@@ -1,8 +1,0 @@
-env_variables:
-  GOOGLE_CLIENT_ID: 'your_google_client_id'
-  GOOGLE_CLIENT_SECRET: 'your_google_client_secret'
-  OPENAI_API_KEY: 'your_openai_api_key'
-  MONGODB_URI: 'your_mongodb_uri'
-  CHROME_EXTENSION_ID: 'your_chrome_extension_id'
-  FRONTEND_URL: 'https://YOUR_PROJECT_ID.appspot.com'
-  BACKEND_URL: 'https://YOUR_PROJECT_ID.appspot.com'

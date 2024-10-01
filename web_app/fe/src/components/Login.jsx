@@ -1,26 +1,60 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = () => {
+const Login = ({ apiEndpoint }) => {
   const navigate = useNavigate();
-  // const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
-  const apiEndpoint = 'https://supercvbackend-47779369171.europe-west3.run.app';
+  const location = useLocation();
+  const [error, setError] = useState(null);
 
 
+  console.log('apiEndpoint', apiEndpoint);
+  axios.defaults.withCredentials = true;
 
   useEffect(() => {
     // Check if this is a login attempt from the Chrome extension
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.search);
     const extensionLogin = urlParams.get('extensionLogin');
     const email = urlParams.get('email');
     const name = urlParams.get('name');
     const picture = urlParams.get('picture');
+    const authSuccess = urlParams.get('authSuccess');
+
+    console.log('Login component mounted. authSuccess:', authSuccess);
 
     if (extensionLogin === 'true' && email && name) {
       handleExtensionLogin(email, name, picture);
     }
-  }, []);
+
+    if (authSuccess === 'true') {
+      checkAuth();
+    }
+  }, [location]);
+
+  const checkAuth = async () => {
+    try {
+      const response = await axios.get(`${apiEndpoint}/api/user`, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      console.log('Auth check response:', response.data)
+      console.log('Response headers:', response.headers);
+      if (response.data) {
+        console.log('User authenticated, navigating to main page');
+
+        navigate('/');
+      } else {
+        console.log('Authentication failed');
+        setError('Authentication failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Auth check error:', error);
+      console.error('Error response:', error.response);
+      setError('Failed to check authentication status');
+    }
+  };
 
   const sendMessageToExtension = (message) => {
     if (chrome.runtime && chrome.runtime.sendMessage) {
@@ -49,6 +83,7 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
+    console.log('Initiating Google login...');
     window.location.href = `${apiEndpoint}/auth/google`;
   };
 

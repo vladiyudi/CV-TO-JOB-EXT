@@ -1,25 +1,55 @@
-version: '3'
+version: '3.8'
+
 services:
-  frontend:
-    build: ./fe
+  nginx:
+    image: nginx:alpine
     ports:
-      - "5000:5000"
-    environment:
-      - VITE_API_ENDPOINT=http://backend:8080
-      - VITE_CHROME_EXTENSION_ID=${CHROME_EXTENSION_ID}
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
+      - frontend
       - backend
 
-  backend:
-    build: ./be
-    ports:
-      - "8080:8080"
+  frontend:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+      args:
+      - VITE_API_ENDPOINT=${VITE_API_ENDPOINT}
     environment:
-      - FRONTEND_URL=http://frontend:5000
+      - VITE_API_ENDPOINT=${VITE_API_ENDPOINT}
+      - VITE_CHROME_EXTENSION_ID=${CHROME_EXTENSION_ID}
+    # volumes:
+    #   - ./fe:/app
+    #   - /app/node_modules
+
+  backend:
+    build:
+      context: ./be
+      dockerfile: Dockerfile
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - MONGODB_URI=${MONGODB_URI}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - BACKEND_URL=${BACKEND_URL}
       - CHROME_EXTENSION_ID=${CHROME_EXTENSION_ID}
-    env_file:
-      - be/.env
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - NODE_ENV=${NODE_ENV}
+    # volumes:
+    #   - ./be:/app
+    #   - /app/node_modules
+
+  mongodb:
+    image: mongo:latest
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
+
+networks:
+  default:
+    name: cv-to-job-network
