@@ -1,5 +1,6 @@
 # Use an official Node.js runtime as the base image
-FROM node:20
+# FROM node:20
+FROM --platform=linux/amd64 node:20
 
 # Install required dependencies for Puppeteer
 RUN apt-get update && apt-get install -y \
@@ -55,8 +56,9 @@ RUN useradd -m app-user
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the package.json and package-lock.json files
-COPY package*.json ./
+# Copy package.json and package-lock.json for both frontend and backend
+COPY fe/package*.json ./fe/
+COPY be/package*.json ./be/
 
 # Change ownership of the /app directory
 RUN chown -R app-user:app-user /app
@@ -64,27 +66,30 @@ RUN chown -R app-user:app-user /app
 # Switch to the app-user user
 USER app-user
 
-# Install the application dependencies using npm ci
-RUN npm ci
+# Install dependencies for both frontend and be
+RUN cd fe && npm ci
+RUN cd be && npm ci
 
 # Switch back to the root user
 USER root
 
-# Copy the rest of the application code to the working directory
-COPY . .
+# Copy the frontend and be source code
+COPY fe ./fe
+COPY be ./be
 
-# ENV PORT=8080
-# ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-# ENV PUPPETEER_ARGS=--no-sandbox
-# ENV OPENAI_API_KEY = ${OPENAI_API_KEY}
-# ENV MONGODB_URI = ${MONGODB_URI}
-# ENV GOOGLE_CLIENT_ID = ${GOOGLE_CLIENT_ID}
-# ENV GOOGLE_CLIENT_SECRET = ${GOOGLE_CLIENT_SECRET}
-# ENV CHROME_EXTENSION_ID = ${CHROME_EXTENSION_ID}
-# ENV BACKEND_URL = ${BACKEND_URL}
-# ENV SESSION_SECRET = ${SESSION_SECRET}
+# Build the React app
+RUN cd fe && npm run build
 
+# Set environment variables
+ENV PORT=8080
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+ENV PUPPETEER_ARGS=--no-sandbox
 
+# Expose the port the app runs on
 EXPOSE 8080
 
+# Set the working directory to the be folder
+WORKDIR /app/be
+
+# Define the command to run the app
 CMD [ "node", "server.js" ]
