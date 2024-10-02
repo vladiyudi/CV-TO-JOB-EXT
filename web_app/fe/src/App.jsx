@@ -11,10 +11,6 @@ import './styles.css';
 const EXTENSION_ID = import.meta.env.VITE_CHROME_EXTENSION_ID;
 // const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
 
-const apiEndpoint = 'https://supercvbackend-47779369171.europe-west3.run.app';
-
-console.log('apiEndpoint', apiEndpoint);
-
 axios.defaults.withCredentials = true;
 
 const ProtectedRoute = ({ children }) => {
@@ -23,7 +19,7 @@ const ProtectedRoute = ({ children }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await axios.get(`${apiEndpoint}/api/user`);
+        const response = await axios.get(`/api/user`);
         setIsAuthenticated(!!response.data);
       } catch (error) {
         setIsAuthenticated(false);
@@ -58,7 +54,7 @@ const MainApp = () => {
   const fetchJobDescription = async () => {
     setIsJobLoading(true);
     try {
-      const response = await axios.get(`${apiEndpoint}/api/job-description`);
+      const response = await axios.get(`/api/job-description`);
       if (response.data.jobDescription) {
         setJob(response.data.jobDescription);
       }
@@ -71,7 +67,7 @@ const MainApp = () => {
 
   const fetchCVText = async () => {
     try {
-      const response = await axios.get(`${apiEndpoint}/api/cv-text`);
+      const response = await axios.get(`/api/cv-text`);
       if (response.data.cvText) {
         setCV(response.data.cvText);
       }
@@ -94,7 +90,7 @@ const MainApp = () => {
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${apiEndpoint}/matchJobCv`, { 
+      const response = await axios.post(`/matchJobCv`, { 
         cv, 
         job
       });
@@ -110,7 +106,7 @@ const MainApp = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.get(`${apiEndpoint}/api/logout`);
+      await axios.get(`/api/logout`);
       navigate('/login');
     } catch (error) {
       console.error('Error logging out:', error);
@@ -120,7 +116,7 @@ const MainApp = () => {
   const handleCVChange = async (newCV) => {
     setCV(newCV);
     try {
-      await axios.post(`${apiEndpoint}/api/cv-text`, { cvText: newCV });
+      await axios.post(`/api/cv-text`, { cvText: newCV });
     } catch (error) {
       console.error('Error saving CV text:', error);
     }
@@ -129,7 +125,7 @@ const MainApp = () => {
   const handleJobChange = async (newJob) => {
     setJob(newJob);
     try {
-      await axios.post(`${apiEndpoint}/api/job-description`, { jobDescription: newJob });
+      await axios.post(`/api/job-description`, { jobDescription: newJob });
     } catch (error) {
       console.error('Error saving job description:', error);
     }
@@ -156,7 +152,7 @@ const MainApp = () => {
       </div>
       <div className="editable-cv-wrapper" ref={editableCVRef}>
         <h2 className="section-title">CV Editor (A4 Format)</h2>
-        <EditableCV initialCV={rewrittenCV} apiEndpoint={apiEndpoint} />
+        <EditableCV initialCV={rewrittenCV} />
       </div>
     </div>
   );

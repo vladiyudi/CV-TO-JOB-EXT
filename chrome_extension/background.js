@@ -1,4 +1,4 @@
-const WEBAPP_URL = 'http://localhost:5173'; // Frontend URL
+const WEBAPP_URL = 'http://localhost:8000'; // Frontend URL
 const API_URL = 'http://localhost:8080'; // Backend URL
 
 function createLoginUrl(email, name, picture) {

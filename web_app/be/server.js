@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const session = require('express-session');
+const path = require('path');
 const { matchJobCvRaw } = require('./middleware/matchJobCv');
 const { createCV } = require('./middleware/createCVJSON');
 const { cvToHtml } = require('./middleware/cvToHtml');
@@ -28,14 +29,11 @@ const User = mongoose.model('User', new mongoose.Schema({
   cvText: String
 }));
 
-console.log(process.env);
-
 // Passport config
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: `${process.env.BACKEND_URL}/auth/google/callback`
-  // callbackURL: `/auth/google/callback`
+  callbackURL: `/auth/google/callback`
 },
 async (accessToken, refreshToken, profile, done) => {
   try {
@@ -67,7 +65,7 @@ passport.deserializeUser(async (id, done) => {
 });
 
 app.use(cors({
-  origin: [process.env.FRONTEND_URL, `chrome-extension://${process.env.CHROME_EXTENSION_ID}`],
+  origin: [`chrome-extension://${process.env.CHROME_EXTENSION_ID}`, process.env.FRONTEND_URL],
   credentials: true
 }));
 app.use(express.json());
@@ -76,13 +74,16 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    sameSite: 'none',
-    secure: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
   }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Serve static files from the Vite build output (dist folder)
+app.use(express.static(path.join(__dirname, '../fe/dist')));
 
 // Auth routes
 app.get('/auth/google',
@@ -91,8 +92,9 @@ app.get('/auth/google',
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
-    res.redirect(process.env.FRONTEND_URL);
+    res.redirect('/');
   });
+
 
 app.get('/api/user', (req, res) => {
   res.json(req.user || null);
@@ -197,6 +199,10 @@ app.post('/matchJobCv', isAuthenticated, async (req, res, next) => {
 }, matchJobCvRaw, createCV);
 
 app.post('/generatePdf', isAuthenticated, cvToHtml);  
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../fe/dist', 'index.html'));
+});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
