@@ -15,14 +15,6 @@ const { cvToHtml } = require('./middleware/cvToHtml');
 const app = express();
 const port = process.env.PORT || 8080;
 
-console.log('Starting server...');
-console.log('Environment variables:');
-console.log('PORT:', process.env.PORT);
-console.log('MONGODB_URI:', process.env.MONGODB_URI);
-console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID);
-console.log('CHROME_EXTENSION_ID:', process.env.CHROME_EXTENSION_ID);
-console.log('BACKEND_URL:', process.env.BACKEND_URL);
-
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))

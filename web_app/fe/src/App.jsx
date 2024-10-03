@@ -94,7 +94,6 @@ const MainApp = () => {
         cv, 
         job
       });
-      console.log('response.data.rewrittenCV', response.data);
       setRewrittenCV(response.data.rewrittenCV);
     } catch (error) {
       console.error('Error:', error);

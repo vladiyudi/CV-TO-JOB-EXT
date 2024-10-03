@@ -60,7 +60,7 @@ const EditableCV = ({ initialCV }) => {
       setEditedCV(updatedContent);
 
       const response = await axios.post(
-        `}/generatePdf`,
+        `/generatePdf`,
         { cvHTML: updatedContent },
         {
           responseType: 'blob',
