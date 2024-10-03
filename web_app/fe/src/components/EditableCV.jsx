@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 
-const EditableCV = ({ initialCV, apiEndpoint }) => {
+const EditableCV = ({ initialCV }) => {
   const [editedCV, setEditedCV] = useState(initialCV);
   const [isLoading, setIsLoading] = useState(false);
   const iframeRef = useRef(null);
@@ -60,7 +60,7 @@ const EditableCV = ({ initialCV, apiEndpoint }) => {
       setEditedCV(updatedContent);
 
       const response = await axios.post(
-        `${apiEndpoint}/generatePdf`,
+        `/generatePdf`,
         { cvHTML: updatedContent },
         {
           responseType: 'blob',

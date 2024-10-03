@@ -7,7 +7,6 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
 const { matchJobCvRaw } = require('./middleware/matchJobCv');
 const { createCV } = require('./middleware/createCVJSON');
 const { cvToHtml } = require('./middleware/cvToHtml');
@@ -78,13 +77,10 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-const corsOptions = {
+app.use(cors({
   origin: [process.env.FRONTEND_URL, `chrome-extension://${process.env.CHROME_EXTENSION_ID}`],
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
+  credentials: true
+}));
 app.use(express.json());
 
 // Session configuration
@@ -97,7 +93,8 @@ app.use(session({
     collectionName: 'sessions'
   }),
   cookie: {
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    sameSite: 'none',
+    secure: true,
     httpOnly: true,
     // secure:false,
     secure: process.env.NODE_ENV === 'production', // set to true if your using https
@@ -108,25 +105,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use((req, res, next) => {
-  console.log('Incoming request:');
-  console.log('URL:', req.url);
-  console.log('Method:', req.method);
-  console.log('Headers:', req.headers);
-  console.log('Cookies:', req.cookies);
-  console.log('Session:', req.session);
-  console.log('User:', req.user);
-  next();
-});
-
-// Logging middleware
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url} - User: ${req.user ? req.user._id : 'Not authenticated'}`);
-  console.log('Session ID:', req.sessionID);
-  console.log('Session:', req.session);
-  next();
-});
-
 // Auth routes
 app.get('/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
@@ -135,13 +113,9 @@ app.get('/auth/google',
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: `${process.env.FRONTEND_URL}/login` }),
   (req, res) => {
-    console.log('Google Auth successful, redirecting to frontend');
-    console.log('Session after auth:', req.session);
-    console.log('User in session after auth:', req.user);
-    // console.log('User in session after auth:', req.user);
-    res.redirect(`${process.env.FRONTEND_URL}/login?authSuccess=true`);
-  }
-);
+    res.redirect(process.env.FRONTEND_URL);
+  });
+
 
 app.get('/api/user', (req, res) => {
   console.log('User info requested', { user: req.user ? req.user._id : 'Not authenticated' });
@@ -221,6 +195,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'An unexpected error occurred' });
 });
 
-app.listen(port, () => {
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../fe/dist', 'index.html'));
+});
+
+app.listen(port, '0.0.0.0', () => {
   console.log(`Server running on port ${port}`);
 });

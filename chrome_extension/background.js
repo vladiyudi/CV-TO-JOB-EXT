@@ -1,5 +1,8 @@
-const WEBAPP_URL = 'http://localhost:5173'; // Frontend URL
-const API_URL = 'http://localhost:8080'; // Backend URL
+// const WEBAPP_URL = 'http://localhost:8000'; 
+// const API_URL = 'http://localhost:8080';
+
+const WEBAPP_URL = 'https://supercv.online'; 
+const API_URL = 'https://supercv.online';
 
 function createLoginUrl(email, name, picture) {
   const url = new URL(`${WEBAPP_URL}/login`);
@@ -20,7 +23,7 @@ function findOrCreateWebappTab() {
   return new Promise((resolve) => {
     const url = new URL(WEBAPP_URL);
     url.searchParams.append('refreshJob', 'true');
-    url.searchParams.append('timestamp', Date.now()); // Add a timestamp to ensure the URL is always unique
+    url.searchParams.append('timestamp', Date.now()); 
 
     chrome.tabs.query({url: `${WEBAPP_URL}/*`}, function(tabs) {
       if (tabs.length > 0) {

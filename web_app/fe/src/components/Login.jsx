@@ -4,12 +4,10 @@ import axios from 'axios';
 
 const Login = ({ apiEndpoint }) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [error, setError] = useState(null);
+  // const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
+  const apiEndpoint = 'https://supercvbackend-47779369171.europe-west3.run.app';
 
 
-  console.log('apiEndpoint', apiEndpoint);
-  axios.defaults.withCredentials = true;
 
   useEffect(() => {
     // Check if this is a login attempt from the Chrome extension
@@ -64,7 +62,7 @@ const Login = ({ apiEndpoint }) => {
 
   const handleExtensionLogin = async (email, name, picture) => {
     try {
-      const response = await axios.post(`${apiEndpoint}/api/auth/google`, {
+      const response = await axios.post(`/api/auth/google`, {
         email,
         name,
         picture
@@ -83,7 +81,6 @@ const Login = ({ apiEndpoint }) => {
   };
 
   const handleGoogleLogin = () => {
-    console.log('Initiating Google login...');
     window.location.href = `${apiEndpoint}/auth/google`;
   };
 
