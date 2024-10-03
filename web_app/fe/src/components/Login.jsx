@@ -1,12 +1,20 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { RainbowButton } from "@/components/ui/rainbow-button";
+import Meteors from "@/components/ui/meteors";
+import Marquee from "@/components/ui/marquee";
+import { firstRow, secondRow, ReviewCard } from './assets/reviews';
+import TypingAnimation from "@/components/ui/typing-animation";
+import BlurIn from "@/components/ui/blur-in";
+import { ListFade } from "./assets/ListFade";
+import { salesArgs } from './assets/copywriting';
 
 const Login = () => {
   const navigate = useNavigate();
 
+
   useEffect(() => {
-    // Check if this is a login attempt from the Chrome extension
     const urlParams = new URLSearchParams(window.location.search);
     const extensionLogin = urlParams.get('extensionLogin');
     const email = urlParams.get('email');
@@ -49,16 +57,49 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
-      <h1>CV Job Matcher</h1>
-      <h2>Login</h2>
-      <img 
-        src="/googleLogin.png" 
-        alt="Login with Google"
-        onClick={handleGoogleLogin} 
-        className="google-login-button"
-      />
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-between overflow-hidden bg-background">
+    <Meteors number={30} />
+
+    <BlurIn
+      word="Get Hired with Ai-Powered CVs"
+      className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-900/80 bg-clip-text text-center text-7xl leading-none text-transparent dark:from-white dark:to-slate-900/100 rajdhani-regular mt-20"
+    />
+    <TypingAnimation
+      className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-900/80 bg-clip-text text-center text-3xl leading-none text-transparent dark:from-white dark:to-slate-900/100 rajdhani-light mt-10"
+      text="Tailor your resume to every job"
+    />
+    
+    <div className="flex-grow flex items-center justify-center w-full">
+      <div className="w-full flex items-center justify-evenly">
+        <ListFade title={salesArgs[0].title} items={salesArgs[0].args} direction='left' />
+        <RainbowButton onClick={handleGoogleLogin}>
+          <div className="flex items-center gap-2">
+            <img src="../../public/g.png" alt="Google Logo" className="h-6 w-6" />
+            <span className='rajdhani-light'>Login with Google</span>
+          </div>
+        </RainbowButton>
+        <ListFade title={salesArgs[1].title} items={salesArgs[1].args} direction='right' />
+      </div>
     </div>
+  
+    {/* Marquee at the bottom */}
+    <div className="w-full overflow-hidden">
+      <Marquee pauseOnHover className="[--duration:20s]">
+        {firstRow.map((review) => (
+          <ReviewCard key={review.username} {...review} />
+        ))}
+      </Marquee>
+      <Marquee reverse pauseOnHover className="[--duration:20s]">
+        {secondRow.map((review) => (
+          <ReviewCard key={review.username} {...review} />
+        ))}
+      </Marquee>
+    </div>
+  
+    {/* Gradient overlays */}
+    <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-background"></div>
+    <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-background"></div>
+  </div>
   );
 };
 
