@@ -5,37 +5,37 @@ export const reviews = [
     name: "Jack",
     username: "@jack",
     body: "This app saved me hours by tailoring my CV automatically. It matched my skills perfectly to job descriptions.",
-    img: "https://avatar.vercel.sh/jack",
+    img: "../../../man1.png",
   },
   {
     name: "Jill",
     username: "@jill",
     body: "I was struggling to get interviews with my old CV, but the AI-tailored version got me multiple offers in a week!",
-    img: "https://avatar.vercel.sh/jill",
+    img: "../../../woman2.png",
   },
   {
     name: "John",
     username: "@john",
     body: "Creating custom CVs for each job used to take forever. Now I can apply to jobs in minutes, and it works!",
-    img: "https://avatar.vercel.sh/john",
+    img: "../../../man2.png",
   },
   {
     name: "Jane",
     username: "@jane",
     body: "I had no idea my CV was the issue until I used this app. Now I’m finally getting callbacks from recruiters.",
-    img: "https://avatar.vercel.sh/jane",
+    img: "../../../woman1.png",
   },
   {
     name: "Jenny",
     username: "@jenny",
     body: "This app has taken the stress out of applying to jobs. I’ve never seen such accurate CV tailoring before.",
-    img: "https://avatar.vercel.sh/jenny",
+    img: "../../../man4.png",
   },
   {
     name: "James",
     username: "@james",
     body: "AI-tailored CVs are a game changer! I’ve applied to more jobs and landed interviews that I couldn’t before.",
-    img: "https://avatar.vercel.sh/james",
+    img: "../../../man3.png",
   }
 ]
 

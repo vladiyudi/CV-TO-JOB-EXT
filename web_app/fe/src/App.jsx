@@ -6,10 +6,11 @@ import { JobInput } from './components/JobInput';
 import EditableCV from './components/EditableCV';
 import Login from './components/Login';
 import './styles.css';
+import ShimmerButton from "@/components/ui/shimmer-button";
+import ShinyButton from "@/components/ui/shiny-button";
+import Ripple from "@/components/ui/ripple";
+import { CoolMode } from "@/components/ui/cool-mode";
 
-// const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
-const EXTENSION_ID = import.meta.env.VITE_CHROME_EXTENSION_ID;
-// const apiEndpoint = import.meta.env.VITE_API_ENDPOINT;
 
 axios.defaults.withCredentials = true;
 
@@ -132,27 +133,31 @@ const MainApp = () => {
 
   return (
     <div className="app-container">
+      <Ripple/>
       <div className="header">
-        <h1 className="app-title">CV Job Matcher</h1>
-        <button onClick={handleLogout} className="logout-button">Logout</button>
+        <h1 className="app-title rajdhani-light">CV Job Matcher</h1>
+        <ShinyButton onClick={handleLogout} className="rajdhani-light">Logout</ShinyButton>
       </div>
       <div className="button-container">
-        <button
+        <CoolMode>
+        <ShimmerButton
           onClick={handleSubmit}
           disabled={isLoading}
-          className="match-button"
+          className="match-button rajdhani-light"
         >
           {isLoading ? 'Processing...' : 'Match CV to Job'}
-        </button>
+        </ShimmerButton>
+        </CoolMode>
       </div>
       <div className="input-container-wrapper">
         <CVInput cv={cv} setCV={handleCVChange} />
         <JobInput job={job} setJob={handleJobChange} isLoading={isJobLoading} />
       </div>
       <div className="editable-cv-wrapper" ref={editableCVRef}>
-        <h2 className="section-title">CV Editor (A4 Format)</h2>
+        <h2 className="section-title rajdhani-light">CV Editor (A4 Format)</h2>
         <EditableCV initialCV={rewrittenCV} />
       </div>
+      
     </div>
   );
 };
@@ -166,6 +171,7 @@ const App = () => {
           path="/"
           element={
             <ProtectedRoute>
+              
               <MainApp />
             </ProtectedRoute>
           }

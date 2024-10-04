@@ -2,8 +2,8 @@ import React from 'react';
 
 export const JobInput = ({ job, setJob }) => {
   return (
-    <div className="input-container">
-      <label htmlFor="job" className="input-label">
+    <div className="input-container ">
+      <label htmlFor="job" className="input-label  rajdhani-light">
         Job Description
       </label>
       <div className="input-wrapper">
@@ -11,8 +11,8 @@ export const JobInput = ({ job, setJob }) => {
           id="job"
           value={job}
           onChange={(e) => setJob(e.target.value)}
-          placeholder="Enter the job description here..."
-          className="input-textarea"
+          placeholder="Caputre job description with Chrome Extension or enter it manually..."
+          className="input-textarea rajdhani-light"
           required
         />
       </div>

@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import { shootConfetti } from './assets/shotConfetti';
+import ShimmerButton from "@/components/ui/shimmer-button";
+import { CoolMode } from "@/components/ui/cool-mode";
 
 const EditableCV = ({ initialCV }) => {
   const [editedCV, setEditedCV] = useState(initialCV);
@@ -70,6 +73,8 @@ const EditableCV = ({ initialCV }) => {
         }
       );
 
+ 
+      shootConfetti();
       if (response.headers['content-type'] === 'application/pdf') {
         const blob = new Blob([response.data], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
@@ -80,7 +85,6 @@ const EditableCV = ({ initialCV }) => {
         link.click();
         link.remove();
         window.URL.revokeObjectURL(url);
-
         alert('Your CV has been generated and downloaded as a PDF.');
       } else {
         alert('An error occurred while generating the PDF.');
@@ -95,13 +99,15 @@ const EditableCV = ({ initialCV }) => {
 
   return (
     <div className="editable-cv-container">
-         <button
+      <CoolMode>
+         <ShimmerButton
         onClick={handleSubmit}
         disabled={isLoading}
-        className="generate-pdf-button"
+        className="generate-pdf-button rajdhani-light"
       >
         {isLoading ? 'Generating PDF...' : 'Generate PDF from Edited CV'}
-      </button>
+      </ShimmerButton>
+      </CoolMode>
       <div className="cv-iframe-container">
         <iframe
           ref={iframeRef}

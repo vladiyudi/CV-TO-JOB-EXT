@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
+import ShinyButton from "@/components/ui/shiny-button";
 
 export const CVInput = ({ cv, setCV }) => {
   const fileInputRef = useRef(null);
@@ -35,7 +36,7 @@ export const CVInput = ({ cv, setCV }) => {
 
   return (
     <div className="input-container">
-      <label htmlFor="cv" className="input-label">
+      <label htmlFor="cv" className="input-label rajdhani-light">
         CV Content
       </label>
       <div className="input-wrapper">
@@ -43,8 +44,8 @@ export const CVInput = ({ cv, setCV }) => {
           id="cv"
           value={cv}
           onChange={(e) => setCV(e.target.value)}
-          placeholder="Enter your CV here..."
-          className="input-textarea"
+          placeholder="Upload CV PDF or enter it manually..."
+          className="input-textarea rajdhani-light"
           required
         />
       </div>
@@ -56,12 +57,12 @@ export const CVInput = ({ cv, setCV }) => {
           style={{ display: 'none' }}
           ref={fileInputRef}
         />
-        <button
+        <ShinyButton
           onClick={() => fileInputRef.current.click()}
-          className="upload-button"
+          className="upload-button rajdhani-light"
         >
           Upload PDF
-        </button>
+        </ShinyButton>
       </div>
     </div>
   );

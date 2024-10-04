@@ -74,7 +74,7 @@ const Login = () => {
         <ListFade title={salesArgs[0].title} items={salesArgs[0].args} direction='left' />
         <RainbowButton onClick={handleGoogleLogin}>
           <div className="flex items-center gap-2">
-            <img src="../../public/g.png" alt="Google Logo" className="h-6 w-6" />
+            <img src="../../g.png" alt="Google Logo" className="h-6 w-6" />
             <span className='rajdhani-light'>Login with Google</span>
           </div>
         </RainbowButton>

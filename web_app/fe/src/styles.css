@@ -90,20 +90,21 @@ body {
 }
 
 .match-button {
-  background-color: #4299e1;
-  color: white;
-  font-weight: bold;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 9999px;
+  /* background-color: #4299e1;
+  color: white; */
+  /* font-weight: bold;
+  padding: 12px 24px; */
+  /* border: none; */
+  /* border-radius: 9999px; */
   cursor: pointer;
   transition: background-color 0.3s, transform 0.3s;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .match-button:hover {
-  background-color: #3182ce;
+  /* background-color: #3182ce; */
   transform: scale(1.05);
+  /* font-weight: bold; */
 }
 
 .match-button:disabled {
@@ -118,7 +119,7 @@ body {
 }
 
 .upload-button {
-  background-color: #48bb78;
+  /* background-color: #48bb78; */
   color: white;
   font-weight: bold;
   padding: 8px 16px;
@@ -130,7 +131,7 @@ body {
 }
 
 .upload-button:hover {
-  background-color: #38a169;
+  /* background-color: #38a169; */
   transform: scale(1.05);
 }
 
@@ -172,11 +173,11 @@ body {
 
 .generate-pdf-button {
   margin-top: 16px;
-  background-color: #4299e1;
+  /* background-color: #4299e1; */
   color: white;
-  font-weight: bold;
-  padding: 8px 16px;
-  border: none;
+  /* font-weight: bold; */
+  /* padding: 8px 16px; */
+  /* border: none; */
   border-radius: 9999px;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.3s;
@@ -184,7 +185,7 @@ body {
 }
 
 .generate-pdf-button:hover {
-  background-color: #3182ce;
+  /* background-color: #3182ce; */
   transform: scale(1.05);
 }
 
