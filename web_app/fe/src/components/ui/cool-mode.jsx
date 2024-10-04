@@ -27,7 +27,7 @@ const applyParticleEffect = (element, options) => {
 
   const defaultParticle = "circle";
   const particleType = options?.particle || defaultParticle;
-  const sizes = [15, 20, 25, 35, 45];
+  const sizes = [15, 20, 25, 35, 45, 17, 45,];
   const limit = 45;
 
   let particles = [];

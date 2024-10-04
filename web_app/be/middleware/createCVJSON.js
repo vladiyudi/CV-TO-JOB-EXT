@@ -2,14 +2,21 @@ const OpenAI = require('openai');
 const JSONtemplate = require('../cvTemplates/cvJSON.js');
 const cleanJsonString = require('../models/clearJsonString.js');
 const {CVHTMLfromTemp} = require('../models/CVHTMLfromTemp.js');
+const User = require('../models/User');
 
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
 
 async function createCV(req, res, next) {
-
   try {
     let { cvRaw } = res.locals;  
     if (!cvRaw) cvRaw = req.body.cvRaw;
+
+    // Fetch the user's selected template if not provided in the request body
+    let templateName = req.body.templateName;
+    if (!templateName) {
+      const user = await User.findById(req.user.id);
+      templateName = user.selectedTemplate || 'cleanDesign';
+    }
 
     const prompt = `Restructure CV written as raw text into JSON format. Here is the raw CV:\n\n${cvRaw}. Here is example of JSON format:\n\n${JSON.stringify(JSONtemplate)}.  Omit preambule and postambule. The output should be only valid JSON`;
 
@@ -22,8 +29,8 @@ async function createCV(req, res, next) {
     
     let cvJSON = cleanJsonString(response.choices[0].message.content.trim());
     
-    // Generate HTML from the JSON
-    const cvHTML = await CVHTMLfromTemp(cvJSON);
+    // Generate HTML from the JSON using the selected template
+    const cvHTML = await CVHTMLfromTemp(cvJSON, templateName);
 
     // Send the HTML to the frontend
     res.json({ rewrittenCV: cvHTML });

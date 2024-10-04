@@ -11,6 +11,9 @@ const path = require('path');
 const { matchJobCvRaw } = require('./middleware/matchJobCv');
 const { createCV } = require('./middleware/createCVJSON');
 const { cvToHtml } = require('./middleware/cvToHtml');
+const { autoMatchMiddleware } = require('./middleware/autoMatchMiddleware');
+const { getTemplates } = require('./controllers/templateController');
+const User = require('./models/User');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -19,15 +22,6 @@ const port = process.env.PORT || 8080;
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Error connecting to MongoDB:', err));
-
-// User model
-const User = mongoose.model('User', new mongoose.Schema({
-  googleId: String,
-  displayName: String,
-  email: String,
-  jobDescription: String,
-  cvText: String
-}));
 
 // Passport config
 passport.use(new GoogleStrategy({
@@ -95,9 +89,13 @@ app.get('/auth/google/callback',
     res.redirect('/');
   });
 
-
 app.get('/api/user', (req, res) => {
-  res.json(req.user || null);
+  if (req.user) {
+    const { id, displayName, email, selectedTemplate } = req.user;
+    res.json({ id, displayName, email, selectedTemplate });
+  } else {
+    res.json(null);
+  }
 });
 
 app.get('/api/logout', (req, res) => {
@@ -151,16 +149,6 @@ app.post('/api/job-description', isAuthenticated, async (req, res) => {
   }
 });
 
-// Endpoint to get job description
-app.get('/api/job-description', isAuthenticated, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    res.json({ success: true, jobDescription: user.jobDescription });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Error retrieving job description' });
-  }
-});
-
 // New endpoint to save CV text
 app.post('/api/cv-text', isAuthenticated, async (req, res) => {
   const { cvText } = req.body;
@@ -182,21 +170,21 @@ app.get('/api/cv-text', isAuthenticated, async (req, res) => {
   }
 });
 
-app.post('/matchJobCv', isAuthenticated, async (req, res, next) => {
-  if (req.query.autoMatch === 'true') {
-    try {
-      const user = await User.findById(req.user.id);
-      if (user.jobDescription) {
-        req.body.jobDescription = user.jobDescription;
-      } else {
-        return res.status(400).json({ message: 'No job description found' });
-      }
-    } catch (error) {
-      return res.status(500).json({ message: 'Error retrieving job description' });
-    }
+// New endpoint to save selected template
+app.post('/api/selected-template', isAuthenticated, async (req, res) => {
+  const { templateName } = req.body;
+  try {
+    await User.findByIdAndUpdate(req.user.id, { selectedTemplate: templateName });
+    res.json({ success: true, message: 'Selected template saved successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error saving selected template' });
   }
-  next();
-}, matchJobCvRaw, createCV);
+});
+
+// New endpoint to get templates
+app.get('/api/templates', getTemplates);
+
+app.post('/matchJobCv', isAuthenticated, autoMatchMiddleware(User), matchJobCvRaw, createCV);
 
 app.post('/generatePdf', isAuthenticated, cvToHtml);  
 

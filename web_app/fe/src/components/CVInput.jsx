@@ -36,7 +36,7 @@ export const CVInput = ({ cv, setCV }) => {
 
   return (
     <div className="input-container">
-      <label htmlFor="cv" className="input-label rajdhani-light">
+      <label htmlFor="cv" className="input-label rajdhani-regular">
         CV Content
       </label>
       <div className="input-wrapper">
@@ -59,7 +59,7 @@ export const CVInput = ({ cv, setCV }) => {
         />
         <ShinyButton
           onClick={() => fileInputRef.current.click()}
-          className="upload-button rajdhani-light"
+          className="upload-button rajdhani-regular"
         >
           Upload PDF
         </ShinyButton>

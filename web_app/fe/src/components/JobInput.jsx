@@ -2,8 +2,8 @@ import React from 'react';
 
 export const JobInput = ({ job, setJob }) => {
   return (
-    <div className="input-container ">
-      <label htmlFor="job" className="input-label  rajdhani-light">
+    <div className="input-container pb-9">
+      <label htmlFor="job" className="input-label  rajdhani-regular">
         Job Description
       </label>
       <div className="input-wrapper">

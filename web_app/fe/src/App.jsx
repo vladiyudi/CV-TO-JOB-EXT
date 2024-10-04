@@ -10,7 +10,7 @@ import ShimmerButton from "@/components/ui/shimmer-button";
 import ShinyButton from "@/components/ui/shiny-button";
 import Ripple from "@/components/ui/ripple";
 import { CoolMode } from "@/components/ui/cool-mode";
-
+import SelectTemplate from './components/SelectTemplate';
 
 axios.defaults.withCredentials = true;
 
@@ -42,6 +42,7 @@ const MainApp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isJobLoading, setIsJobLoading] = useState(false);
   const [rewrittenCV, setRewrittenCV] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState('cleanDesign');
   const editableCVRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -51,6 +52,29 @@ const MainApp = () => {
       editableCVRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [rewrittenCV]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(`/api/user`);
+        if (response.data && response.data.selectedTemplate) {
+          setSelectedTemplate(response.data.selectedTemplate);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+    fetchCVText();
+    
+    const params = new URLSearchParams(location.search);
+    if (params.get('refreshJob') === 'true') {
+      fetchJobDescription();
+      // Remove the query parameter after fetching
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location]);
 
   const fetchJobDescription = async () => {
     setIsJobLoading(true);
@@ -77,23 +101,13 @@ const MainApp = () => {
     }
   };
 
-  useEffect(() => {
-    fetchCVText();
-    
-    const params = new URLSearchParams(location.search);
-    if (params.get('refreshJob') === 'true') {
-      fetchJobDescription();
-      // Remove the query parameter after fetching
-      navigate(location.pathname, { replace: true });
-    }
-  }, [location]);
-
   const handleSubmit = async () => {
     setIsLoading(true);
     try {
       const response = await axios.post(`/matchJobCv`, { 
         cv, 
-        job
+        job,
+        templateName: selectedTemplate
       });
       setRewrittenCV(response.data.rewrittenCV);
     } catch (error) {
@@ -131,11 +145,20 @@ const MainApp = () => {
     }
   };
 
+  const handleTemplateSelect = async (templateName) => {
+    setSelectedTemplate(templateName);
+    try {
+      await axios.post(`/api/selected-template`, { templateName });
+    } catch (error) {
+      console.error('Error saving selected template:', error);
+    }
+  };
+
   return (
     <div className="app-container">
       <Ripple/>
       <div className="header">
-        <h1 className="app-title rajdhani-light">CV Job Matcher</h1>
+        <h1 className="app-title rajdhani-regular">CV Job Matcher</h1>
         <ShinyButton onClick={handleLogout} className="rajdhani-light">Logout</ShinyButton>
       </div>
       <div className="button-container">
@@ -153,11 +176,13 @@ const MainApp = () => {
         <CVInput cv={cv} setCV={handleCVChange} />
         <JobInput job={job} setJob={handleJobChange} isLoading={isJobLoading} />
       </div>
-      <div className="editable-cv-wrapper" ref={editableCVRef}>
-        <h2 className="section-title rajdhani-light">CV Editor (A4 Format)</h2>
-        <EditableCV initialCV={rewrittenCV} />
+      <div>
+        <SelectTemplate onTemplateSelect={handleTemplateSelect} initialTemplate={selectedTemplate} />
       </div>
-      
+      <div className="editable-cv-wrapper" ref={editableCVRef}>
+        <h2 className="section-title rajdhani-regular">CV Editor (A4 Format)</h2>
+        <EditableCV initialCV={rewrittenCV} selectedTemplate={selectedTemplate} />
+      </div>
     </div>
   );
 };
@@ -171,7 +196,6 @@ const App = () => {
           path="/"
           element={
             <ProtectedRoute>
-              
               <MainApp />
             </ProtectedRoute>
           }
