@@ -66,7 +66,9 @@ export default {
   			'marquee-vertical': 'marquee-vertical var(--duration) linear infinite',
   			'shimmer-slide': 'shimmer-slide var(--speed) ease-in-out infinite alternate',
   			'spin-around': 'spin-around calc(var(--speed) * 2) infinite linear',
-  			ripple: 'ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite'
+  			ripple: 'ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite',
+  			shine: 'shine var(--duration) infinite linear',
+  			'border-beam': 'border-beam calc(var(--duration)*1s) infinite linear'
   		},
   		keyframes: {
   			rainbow: {
@@ -131,6 +133,22 @@ export default {
   				},
   				'50%': {
   					transform: 'translate(-50%, -50%) scale(0.9)'
+  				}
+  			},
+  			shine: {
+  				'0%': {
+  					'background-position': '0% 0%'
+  				},
+  				'50%': {
+  					'background-position': '100% 100%'
+  				},
+  				to: {
+  					'background-position': '0% 0%'
+  				}
+  			},
+  			'border-beam': {
+  				'100%': {
+  					'offset-distance': '100%'
   				}
   			}
   		}

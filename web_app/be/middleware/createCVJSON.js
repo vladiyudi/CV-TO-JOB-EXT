@@ -3,6 +3,7 @@ const JSONtemplate = require('../cvTemplates/cvJSON.js');
 const cleanJsonString = require('../models/clearJsonString.js');
 const {CVHTMLfromTemp} = require('../models/CVHTMLfromTemp.js');
 const User = require('../models/User');
+const cv = require('./cv.json')
 
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY});
 
@@ -28,11 +29,11 @@ async function createCV(req, res, next) {
     });
     
     let cvJSON = cleanJsonString(response.choices[0].message.content.trim());
-    
-    // Generate HTML from the JSON using the selected template
-    const cvHTML = await CVHTMLfromTemp(cvJSON, templateName);
 
-    // Send the HTML to the frontend
+    // const cvJSON = JSON.stringify(cv);
+  
+    const cvHTML = await CVHTMLfromTemp(cvJSON, templateName);
+    
     res.json({ rewrittenCV: cvHTML });
 
   } catch (error) {

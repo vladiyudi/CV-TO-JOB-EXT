@@ -9,6 +9,7 @@ import TypingAnimation from "@/components/ui/typing-animation";
 import BlurIn from "@/components/ui/blur-in";
 import { ListFade } from "./assets/ListFade";
 import { salesArgs } from './assets/copywriting';
+import { IconCloudDemo } from './assets/iconVloud';
 
 const Login = () => {
   const navigate = useNavigate();

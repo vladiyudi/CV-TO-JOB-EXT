@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import BorderBeam from "@/components/ui/shine-border";
+
 
 export default function SelectTemplate({ onTemplateSelect, initialTemplate }) {
   const [templates, setTemplates] = useState([]);
@@ -32,6 +34,7 @@ export default function SelectTemplate({ onTemplateSelect, initialTemplate }) {
       <h2 className="text-2xl font-bold mb-4">Choose a Template</h2>
       <div className="flex overflow-x-auto space-x-4 pb-4 p-1">
         {templates.map((template, index) => (
+          
           <div
             key={index}
             className={`flex-shrink-0 cursor-pointer transition-all duration-300`}
@@ -49,6 +52,7 @@ export default function SelectTemplate({ onTemplateSelect, initialTemplate }) {
                   transformOrigin: 'top left',
                 }}
               />
+              
             </div>
             <p className="mt-2 text-center">{template.name}</p>
           </div>

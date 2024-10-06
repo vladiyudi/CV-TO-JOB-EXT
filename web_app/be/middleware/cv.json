@@ -1,0 +1,79 @@
+{
+    "personalInfo": {
+      "name": "VLADIMIR IUDASHKIN",
+      "title": "SENIOR FRONT-END DEVELOPER",
+      "email": "plastikwood@gmail.com",
+      "phone": "058-490-6009",
+      "location": ""
+    },
+    "professionalSummary": "Senior Front-End Developer with over 5 years of experience in building high-quality front-end applications. Proficient in React and Angular.js, with a strong background in optimizing code for performance and scalability.",
+    "workExperience": [
+      {
+        "jobTitle": "Full Stack Developer",
+        "company": "Intelligence Traffic Control",
+        "startDate": "Sep 2022",
+        "endDate": "Oct 2023",
+        "responsibilities": [
+          "Developed web applications using React for efficient data visualization.",
+          "Collaborated with cross-functional teams to implement features from inception to delivery.",
+          "Ensured code cleanliness and maintainability through best practices."
+        ]
+      },
+      {
+        "jobTitle": "Network Engineer",
+        "company": "Via Transportation",
+        "startDate": "Oct 2023",
+        "endDate": "March 2024",
+        "responsibilities": [
+          "Coordinated efforts to maintain and optimize server networks, contributing to the overall performance of applications."
+        ]
+      },
+      {
+        "jobTitle": "Data Engineer",
+        "company": "Independent Contractor",
+        "startDate": "March 2024",
+        "endDate": "Present",
+        "responsibilities": [
+          "Designed and implemented efficient data pipelines, showcasing problem-solving skills in complex technical challenges."
+        ]
+      }
+    ],
+    "education": [
+      {
+        "degree": "Bachelor in Engineering",
+        "institution": "National Technical University of Ukraine",
+        "graduationDate": ""
+      },
+      {
+        "degree": "Full Stack Developer",
+        "institution": "ITC (Israel Tech Challenge)",
+        "graduationDate": ""
+      }
+    ],
+    "skills": [
+      {
+        "category": "Programming Languages",
+        "list": ["JavaScript", "TypeScript"]
+      },
+      {
+        "category": "Front-End Frameworks",
+        "list": ["React (Hooks)", "Angular.js"]
+      },
+      {
+        "category": "State Management",
+        "list": ["Redux", "MobX"]
+      },
+      {
+        "category": "Development Tools",
+        "list": ["Webpack", "Babel"]
+      },
+      {
+        "category": "APIs",
+        "list": ["RESTful APIs", "JWT", "OpenID Connect"]
+      },
+      {
+        "category": "Cloud Technologies",
+        "list": ["AWS"]
+      }
+    ]
+  }

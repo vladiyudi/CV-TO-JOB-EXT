@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Exo:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Inconsolata:wght@200..900&family=Protest+Strike&family=Roboto+Slab:wght@100..900&family=Sixtyfour+Convergence&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
     <title>{{personalInfo.name}} - CV</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "IBM Plex Mono", monospace;
             line-height: 1.6;
             color: #333;
             max-width: 800px;
@@ -18,15 +18,15 @@
             /* background-color: rgb(244, 237, 230); */
         }
         .title-name {
-            font-family: 'Exo', sans-serif;
+            font-family: "IBM Plex Mono", monospace;
             font-weight: 300;
         }
         .job-title {
-            font-family: 'Exo', sans-serif;
+            font-family: "IBM Plex Mono", monospace;
             font-weight: 250;
         }
         .header {
-            text-align: center;
+            /* text-align: center; */
             margin-bottom: 20px;
         }
         .header h1 {
@@ -57,33 +57,33 @@
             margin-bottom: 10px;
         }
         .body-text {
-            font-family: 'Exo', sans-serif;
+            font-family: "IBM Plex Mono", monospace;
             font-weight: 300;
             font-size: 13px;
         }
         .category-title {
-            font-family: "Exo", sans-serif;
+            font-family: "IBM Plex Mono", monospace;
             font-weight: 200;
             font-size: 15px;
         }
         .contact-info p {
             margin: 5px 0;
         }
-        .skills-category {
-            margin-bottom: 15px;
-        }
+        /* .skills-category {
+            {{!-- margin-bottom: 15px; --}}
+        } */
         .skills-category h4 {
             margin: 0 0 5px;
             font-weight: bold;
+   
         }
-        .skills-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
+        .skills-category ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
         }
-        .skills-list span:not(:last-child)::after {
-            content: " | ";
-            margin: 0 5px;
+        .skills-category li {
+            margin-top: 2px;
         }
         .experience-item {
             margin-bottom: 15px;
@@ -103,10 +103,12 @@
         .education {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
+            flex-direction: column;
         }
         .education-item {
             flex: 1;
+            display: flex;
+            flex-direction: row;
         }
         .education-item h4 {
             margin: 0;
@@ -120,69 +122,117 @@
             border-top: 1px solid #ccc;
             margin: 10px 0;
         }
+        /* .background-colorful {
+            background-color: rgb(215, 238, 180);
+        } */
+         .two-columns {
+             display: flex;
+             flex-direction: row;
+         }
+         .black-line {
+            width: 3px;
+            background-color: rgb(167, 10, 20);
+            margin: 10px;
+         }
+         .left-col {
+             display: flex;
+             flex-direction: column;
+             align-items: end;
+             width: 140px;
+             color:   rgb(167, 10, 20);
+         }
+         .right-col {
+             width: 500px;
+         }
+         .name {
+             font-size: 20px;
+             font-weight: bold;
+             text-align: end;
+             padding-top: 10px;
+         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1 class="title-name">{{personalInfo.name}}</h1>
-        <hr style="border: .4px solid black;">
-        <h2 class="job-title" style="font-size: 17px;">{{personalInfo.title}}</h2>
-        <hr style="border: 0.4px solid black;">
+
+    <div class="two-columns" style="margin-top: 20px">
+        <div class="left-col">
+            <div class="name">{{personalInfo.name}}</div>
+           
+        </div>
+        <div class="black-line"></div>
+   
+        <div class="contact-info right-col" style="display:flex; flex-direction:column">
+             <div class="" style="font-size: 20px; font-weight: bold; margin-top: 20px">{{personalInfo.title}}</div>
+             <div style="display: flex;" style="font-size: 8px">
+            <span class="body-text" style="margin-right: 10px; font-size: 11px">{{personalInfo.phone}}</span>
+            <span class="body-text" style="font-size: 11px">{{personalInfo.email}}</span>
+            </div>
+        </div>
+   
     </div>
     
-    <div class="content">
-        <div class="left-column">
-            <div class="section-title">CONTACT</div>
-            <hr>
-            <div class="contact-info">
-                <p class="body-text">{{personalInfo.phone}}</p>
-                <p class="body-text">{{personalInfo.email}}</p>
+    <div style="margin-top: 20px">
+        <div >
+            <div class="two-columns">
+                <div class="section-title  left-col">PROFILE</div>
+                <div class="black-line"></div>
+                <div class="body-text right-col">{{professionalSummary}}</div>
             </div>
-            
-            <div class="section-title">SKILLS</div>
-            <hr>
-            {{#each skills}}
-            <div class="skills-category">
-                <h4 class="category-title">{{category}}</h4>
-                <div class="skills-list body-text">
-                    {{#each list}}
-                    <span>{{this}}</span>
-                    {{/each}}
-                </div>
-                {{#unless @last}}<hr>{{/unless}}
-            </div>
-            {{/each}}
-        </div>
-        
-        <div class="right-column">
-            <div class="section-title">PROFILE</div>
-            <hr>
-            <p class="body-text">{{professionalSummary}}</p>
-            
-            <div class="section-title">EXPERIENCE</div>
-            <hr>
-            {{#each workExperience}}
-            <div class="experience-item">
-                <h4 class="category-title">{{jobTitle}}</h4>
-                <p class="body-text">{{company}} | {{startDate}} - {{endDate}}</p>
-                <ul class="body-text">
-                    {{#each responsibilities}}
-                    <li class="body-text">{{this}}</li>
-                    {{/each}}
-                </ul>
-            </div>
-            {{/each}}
-        </div>    
-    </div>
-       <div class="section-title">EDUCATION</div>
-            <hr>
-            <div class="education">
-                {{#each education}}
-                <div class="education-item">
-                    <h4>{{institution}}</h4>
-                    <p class="body-text">{{degree}}</p>
+        <div class="two-columns" style="margin-top: 20px">
+            <div class="section-title background-colorful left-col">EXPERIENCE</div>
+            <div class="black-line"></div>
+            <div class="right-col">
+                {{#each workExperience}}
+                <div class="experience-item">
+                    <h4 class="category-title">{{jobTitle}}</h4>
+                    <p class="body-text">{{company}} | {{startDate}} - {{endDate}}</p>
+                    <ul class="body-text">
+                        {{#each responsibilities}}
+                        <li class="body-text">{{this}}</li>
+                        {{/each}}
+                    </ul>
                 </div>
                 {{/each}}
             </div>
+        </div>
+        </div>
+        <div >
+          
+          <div class="two-columns">
+            <div class="section-title background-colorful left-col">SKILLS</div>
+            <div class="black-line"></div>
+            <div class="right-col">
+            {{#each skills}}
+            <div class="skills-category" style="display:flex; flex-direction:row">
+                <div style="display:flex; flex-direction:row">
+                <h4 class="category-title" >{{category}}</h4>
+                <ul style="display:flex; flex-direction:row">
+                    {{#each list}}
+                    <li class="body-text" style="margin-left: 10px;">{{this}}</li>
+                    {{/each}}
+                </ul>
+                {{#unless @last}} {{/unless}}
+                </div>
+                
+            </div>
+            {{/each}}
+        </div>
+        </div>  
+        <div class="two-columns" style="margin-top: 15px;">
+            <div class="section-title background-colorful left-col">EDUCATION</div>
+            <div class="black-line"></div>
+            <div class="education right-col">
+                {{#each education}}
+                <div class="education-item">
+                    <h4 style="margin-right: 5px">{{institution}}</h4>
+                    <p class="body-text">{{degree}}</p>
+                </div>
+                {{/each}}
+        </div>
+            </div>
+        </div>
+        
+       
+    </div>
 </body>
 </html>

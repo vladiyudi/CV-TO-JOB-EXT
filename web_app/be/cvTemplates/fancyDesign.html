@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Protest+Strike&family=Sixtyfour+Convergence&display=swap" rel="stylesheet">
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&family=Inconsolata:wght@200..900&family=Protest+Strike&family=Roboto+Slab:wght@100..900&family=Sixtyfour+Convergence&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
     <title>{{personalInfo.name}} - CV</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Roboto Slab", serif;
             line-height: 1.6;
             color: #333;
             max-width: 800px;
@@ -18,11 +18,11 @@
             /* background-color: rgb(244, 237, 230); */
         }
         .title-name {
-            font-family: "Edu AU VIC WA NT Dots", cursive;
+            font-family: "Roboto Slab", serif;
             font-weight: 300;
         }
         .job-title {
-            font-family: "Edu AU VIC WA NT Dots", cursive;
+            font-family: "Roboto Slab", serif;
             font-weight: 250;
         }
         .header {
@@ -56,34 +56,39 @@
             margin-top: 20px;
             margin-bottom: 10px;
         }
+        .edu {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            /* margin-bottom: 10px; */
+            margin-top: 15px;
+        }
         .body-text {
-            font-family: 'Edu AU VIC WA NT Dots', cursive;
+            font-family: "Roboto Slab", serif;
             font-weight: 300;
             font-size: 13px;
         }
         .category-title {
-            font-family: "Exo", sans-serif;
+            font-family: "Roboto Slab", serif;
             font-weight: 200;
             font-size: 15px;
         }
         .contact-info p {
             margin: 5px 0;
         }
-        .skills-category {
-            margin-bottom: 15px;
-        }
         .skills-category h4 {
             margin: 0 0 5px;
             font-weight: bold;
+   
         }
         .skills-category ul {
             list-style-type: none;
             padding: 0;
             margin: 0;
         }
-        .skills-category li {
-            margin-bottom: 3px;
-        }
+        /* .skills-category li {
+            margin-top: 2px;
+        } */
         .experience-item {
             margin-bottom: 15px;
         }
@@ -102,7 +107,7 @@
         .education {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         .education-item {
             flex: 1;
@@ -119,68 +124,110 @@
             border-top: 1px solid #ccc;
             margin: 10px 0;
         }
+        .background-colorful {
+            background-color: rgb(215, 238, 180);
+         
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1 class="title-name">{{personalInfo.name}}</h1>
-        <hr style="border: .4px solid black;">
-        <h2 class="job-title" style="font-size: 17px;">{{personalInfo.title}}</h2>
-        <hr style="border: 0.4px solid black;">
+        <h1 class="title-name ">David Nguyen</h1>
+        <h2 class="job-title" style="font-size: 17px;">Finencial Analyst</h2>
+        <div class="contact-info">
+            <span class="body-text">+1 234 567 890</span>
+            <span class="body-text">finencel@cv.com</span>
+        </div>
+   
     </div>
     
-    <div class="content">
-        <div class="left-column">
-            <div class="section-title">CONTACT</div>
-            <hr>
-            <div class="contact-info">
-                <p class="body-text">{{personalInfo.phone}}</p>
-                <p class="body-text">{{personalInfo.email}}</p>
-            </div>
-            
-            <div class="section-title">SKILLS</div>
-            <hr>
-            {{#each skills}}
-            <div class="skills-category">
-                <h4 class="category-title">{{category}}</h4>
-                <ul>
-                    {{#each list}}
-                    <li class="body-text">{{this}}</li>
-                    {{/each}}
+    <div>
+        <div >
+            <div class="section-title background-colorful">PROFILE</div>
+            <p class="body-text">Data Scientist with over 3 years of experience in developing and implementing machine learning models for real-world applications. Proficient in Python and SQ. Data Scientist with over 3 years of experience in developing and implementing machine learning models for real-world applications. Proficient in Python and SQ</p>
+            <div class="section-title background-colorful">EXPERIENCE</div>
+            <div class="experience-item">
+                <h4 class="category-title">Data Scientist
+                </h4>
+                <p class="body-text">OpenAi | March 2024 - Present</p>
+                <ul class="body-text">
+                    <li class="body-text">Conducted machine learning projects to create innovative solutions based on data analysis.</li>
+                    <li class="body-text">Designed and implemented a data collection strategy </li>
+                    
+                  
                 </ul>
-                {{#unless @last}}<hr>{{/unless}}
             </div>
-            {{/each}}
-            <div class="section-title">EDUCATION</div>
-            <hr>
-            <div class="education">
-                {{#each education}}
-                <div class="education-item">
-                    <h4>{{institution}}</h4>
-                    <p class="body-text">{{degree}}</p>
-                </div>
-                {{/each}}
+            <div class="experience-item">
+                <h4 class="category-title">Data Scientist
+                </h4>
+                <p class="body-text">OpenAi | March 2024 - Present</p>
+                <ul class="body-text">
+                    <li class="body-text">Conducted machine learning projects to create innovative solutions based on data analysis.</li>
+                    <li class="body-text">Designed and implemented a data collection strategy </li>
+                    <li class="body-text">Conducted machine learning projects to create innovative solutions based on data analysis.</li>
+                </ul>
+            </div>
+            <div class="experience-item">
+                <h4 class="category-title">Data Scientist
+                </h4>
+                <p class="body-text">OpenAi | March 2024 - Present</p>
+                <ul class="body-text">
+                    <li class="body-text">Conducted machine learning projects to create innovative solutions based on data analysis.</li>
+                    <li class="body-text">Conducted machine learning projects to create innovative solutions .</li>
+    
+                </ul>
             </div>
         </div>
-        
-        <div class="right-column">
-            <div class="section-title">PROFILE</div>
-            <hr>
-            <p class="body-text">{{professionalSummary}}</p>
-            
-            <div class="section-title">EXPERIENCE</div>
-            <hr>
-            {{#each workExperience}}
-            <div class="experience-item">
-                <h4 class="category-title">{{jobTitle}}</h4>
-                <p class="body-text">{{company}} | {{startDate}} - {{endDate}}</p>
-                <ul class="body-text">
-                    {{#each responsibilities}}
-                    <li class="body-text">{{this}}</li>
-                    {{/each}}
+        <div >
+            <div class="section-title background-colorful">SKILLS</div>
+            <div class="skills-category" style="display:flex; flex-direction:column">
+                <div style="display:flex; flex-direction:row">
+                <h4 class="category-title" >Finencial Management</h4>
+                <ul style="display:flex; flex-direction:row">
+                    <li class="body-text" style="margin-left: 10px;">Social Media</li>
+                    <li class="body-text" style="margin-left: 10px;">Financial Services</li>
+                    <li class="body-text" style="margin-left: 10px;">Cool stuff</li>
+                    <li class="body-text" style="margin-left: 10px;">Team Building</li>
                 </ul>
+                </div> 
+                <div style="display:flex; flex-direction:row">
+                    <h4 class="category-title" >Accounting</h4>
+                    <ul style="display:flex; flex-direction:row">
+                        <li class="body-text" style="margin-left: 10px;">Social Media</li>
+                        <li class="body-text" style="margin-left: 10px;">Financial Services</li>
+                        <li class="body-text" style="margin-left: 10px;">Cool stuff</li>
+                        <li class="body-text" style="margin-left: 10px;">Team Building</li>
+                    </ul>
+                    </div> 
+                    <div style="display:flex; flex-direction:row">
+                        <h4 class="category-title" >Marketing</h4>
+                        <ul style="display:flex; flex-direction:row">
+                            <li class="body-text" style="margin-left: 10px;">Social Media</li>
+                            <li class="body-text" style="margin-left: 10px;">Financial Services</li>
+                            <li class="body-text" style="margin-left: 10px;">Cool stuff</li>
+                            <li class="body-text" style="margin-left: 10px;">Team Building</li>
+                            <li class="body-text" style="margin-left: 10px;">Team Building</li>
+                        </ul>
+                        </div>
             </div>
-            {{/each}}
+            <div class="edu background-colorful">EDUCATION</div>
+          
+            <div class="education">
+          
+                <div class="education-item">
+                    <h4>Harward University</h4>
+                    <p class="body-text">PhD in Computer Science</p>
+                </div>
+                <div class="education-item">
+                    <h4>Harward University</h4>
+                    <p class="body-text">PhD in Computer Science</p>
+                </div>
+                <div class="education-item">
+                    <h4>Harward University</h4>
+                    <p class="body-text">PhD in Computer Science</p>
+                </div>
+              
+            </div>
         </div>
     </div>
 </body>
