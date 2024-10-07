@@ -14,6 +14,7 @@ const { cvToHtml } = require('./middleware/cvToHtml');
 const { autoMatchMiddleware } = require('./middleware/autoMatchMiddleware');
 const { getTemplates } = require('./controllers/templateController');
 const User = require('./models/User');
+const cvToHtmlPreview = require('./controllers/cvToHtmlPreview');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -187,6 +188,8 @@ app.get('/api/templates', getTemplates);
 app.post('/matchJobCv', isAuthenticated, autoMatchMiddleware(User), matchJobCvRaw, createCV);
 
 app.post('/generatePdf', isAuthenticated, cvToHtml);  
+
+app.post('/generatePdfPreview', isAuthenticated, cvToHtmlPreview);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../fe/dist', 'index.html'));

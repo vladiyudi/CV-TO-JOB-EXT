@@ -6,16 +6,17 @@ import { JobInput } from './components/JobInput';
 import EditableCV from './components/EditableCV';
 import Login from './components/Login';
 import './styles.css';
-import ShimmerButton from "@/components/ui/shimmer-button";
 import ShinyButton from "@/components/ui/shiny-button";
 import Ripple from "@/components/ui/ripple";
-import { CoolMode } from "@/components/ui/cool-mode";
 import SelectTemplate from './components/SelectTemplate';
+import ShowInfo from './components/assets/StepOneInfo';
+import NextStepButton from './components/assets/NextStepButton';
 
 axios.defaults.withCredentials = true;
 
 const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
+
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -37,6 +38,7 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const MainApp = () => {
+  const cvJSON = useRef(null);
   const [cv, setCV] = useState('');
   const [job, setJob] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +46,7 @@ const MainApp = () => {
   const [rewrittenCV, setRewrittenCV] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('cleanDesign');
   const editableCVRef = useRef(null);
+  const selectTemplateRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -101,20 +104,23 @@ const MainApp = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleGenerateCvJob = async () => {
+    selectTemplateRef.current?.scrollIntoView({ behavior: 'smooth' });
     setIsLoading(true);
     try {
       const response = await axios.post(`/matchJobCv`, { 
         cv, 
         job,
-        templateName: selectedTemplate
+        templateName: selectedTemplate,
+      
       });
-      setRewrittenCV(response.data.rewrittenCV);
+      cvJSON.current = response.data.cvJSON;
     } catch (error) {
       console.error('Error:', error);
       alert('An error occurred while processing your request.');
     } finally {
       setIsLoading(false);
+     selectTemplateRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -126,6 +132,16 @@ const MainApp = () => {
       console.error('Error logging out:', error);
     }
   };
+
+  const handleShowPDFPreview = async () => {
+    try{
+      
+      const response = await axios.post(`/generatePdfPreview`, { cvJSON: cvJSON.current, templateName: selectedTemplate });
+      setRewrittenCV(response.data.cvHTML);
+    } catch (error) {
+      console.error('Error generating PDF preview:', error);
+    }
+  }
 
   const handleCVChange = async (newCV) => {
     setCV(newCV);
@@ -158,27 +174,20 @@ const MainApp = () => {
     <div className="app-container">
       <Ripple/>
       <div className="header">
-        <h1 className="app-title rajdhani-regular">CV Job Matcher</h1>
+        <h1 className="app-title rajdhani-regular">Apply to a Dream Job in a steps:</h1>
         <ShinyButton onClick={handleLogout} className="rajdhani-light">Logout</ShinyButton>
-      </div>
-      <div className="button-container">
-        <CoolMode>
-        <ShimmerButton
-          onClick={handleSubmit}
-          disabled={isLoading}
-          className="match-button rajdhani-light"
-        >
-          {isLoading ? 'Processing...' : 'Match CV to Job'}
-        </ShimmerButton>
-        </CoolMode>
       </div>
       <div className="input-container-wrapper">
         <CVInput cv={cv} setCV={handleCVChange} />
         <JobInput job={job} setJob={handleJobChange} isLoading={isJobLoading} />
       </div>
-      <div>
+        <NextStepButton handleSubmit={ handleGenerateCvJob} isLoading={isLoading} text={'CV to Job'}/>
+        <ShowInfo info={'Step 1: Match CV to Job description'}/>
+      <div ref={selectTemplateRef}>
         <SelectTemplate onTemplateSelect={handleTemplateSelect} initialTemplate={selectedTemplate} />
       </div>
+      <NextStepButton handleSubmit={ handleShowPDFPreview} isLoading={isLoading} text="Choose Template"/>
+      <ShowInfo info={'Step 2: Choose template for new CV. Try as many as you want'}/>
       <div className="editable-cv-wrapper" ref={editableCVRef}>
         <h2 className="section-title rajdhani-regular">CV Editor (A4 Format)</h2>
         <EditableCV initialCV={rewrittenCV} selectedTemplate={selectedTemplate} />

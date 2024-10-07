@@ -1,9 +1,10 @@
 import React from 'react';
+import ShinyButton from './ui/shiny-button';
 
 export const JobInput = ({ job, setJob }) => {
   return (
-    <div className="input-container pb-9">
-      <label htmlFor="job" className="input-label  rajdhani-regular">
+    <div className="input-container ">
+      <label htmlFor="job" className="input-label  rajdhani-regular flex justify-end">
         Job Description
       </label>
       <div className="input-wrapper">
@@ -16,8 +17,8 @@ export const JobInput = ({ job, setJob }) => {
           required
         />
       </div>
-      <div className="upload-button-container">
-        {/* Placeholder div to maintain alignment with CVInput */}
+      <div className="upload-button-container flex justify-end rajdhani-light">
+        <ShinyButton>Chrome Extenstion</ShinyButton>  
       </div>
     </div>
   );

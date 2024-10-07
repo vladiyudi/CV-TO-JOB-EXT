@@ -17,14 +17,6 @@
             padding: 20px;
             /* background-color: rgb(244, 237, 230); */
         }
-        .title-name {
-            font-family: "IBM Plex Mono", monospace;
-            font-weight: 300;
-        }
-        .job-title {
-            font-family: "IBM Plex Mono", monospace;
-            font-weight: 250;
-        }
         .header {
             /* text-align: center; */
             margin-bottom: 20px;
@@ -156,13 +148,13 @@
 
     <div class="two-columns" style="margin-top: 20px">
         <div class="left-col">
-            <div class="name">{{personalInfo.name}}</div>
+            <div class="name title-name">{{personalInfo.name}}</div>
            
         </div>
         <div class="black-line"></div>
    
         <div class="contact-info right-col" style="display:flex; flex-direction:column">
-             <div class="" style="font-size: 20px; font-weight: bold; margin-top: 20px">{{personalInfo.title}}</div>
+             <div class="job-title" style="font-size: 20px; font-weight: bold; margin-top: 20px">{{personalInfo.title}}</div>
              <div style="display: flex;" style="font-size: 8px">
             <span class="body-text" style="margin-right: 10px; font-size: 11px">{{personalInfo.phone}}</span>
             <span class="body-text" style="font-size: 11px">{{personalInfo.email}}</span>

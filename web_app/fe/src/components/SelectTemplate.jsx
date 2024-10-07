@@ -41,7 +41,7 @@ export default function SelectTemplate({ onTemplateSelect, initialTemplate }) {
             onClick={() => handleTemplateSelect(template)}
           >
             <div className={`relative w-[335px] h-[465.5px] border border-gray-300 overflow-hidden p-[10px] ${
-              selectedTemplate === template.name ? 'ring-4 ring-blue-500' : ''
+              selectedTemplate === template.name ? 'ring-4 ring-gray-350' : ''
             }`}>
               <iframe
                 srcDoc={template.content}

@@ -39,6 +39,7 @@ export const CVInput = ({ cv, setCV }) => {
       <label htmlFor="cv" className="input-label rajdhani-regular">
         CV Content
       </label>
+    
       <div className="input-wrapper">
         <textarea
           id="cv"

@@ -80,7 +80,12 @@ const EditableCV = ({ initialCV }) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'generated_cv.pdf');
+        let fileName = response.headers['content-disposition'].split('=')[1];
+        console.log(fileName)
+      
+   
+        
+        link.setAttribute('download', `${fileName}`);
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -99,6 +104,14 @@ const EditableCV = ({ initialCV }) => {
 
   return (
     <div className="editable-cv-container">
+
+      <div className="cv-iframe-container">
+        <iframe
+          ref={iframeRef}
+          title="CV Editor"
+          className="cv-iframe"
+        />
+      </div>
       <CoolMode>
          <ShimmerButton
         onClick={handleSubmit}
@@ -108,14 +121,6 @@ const EditableCV = ({ initialCV }) => {
         {isLoading ? 'Generating PDF...' : 'Generate PDF from Edited CV'}
       </ShimmerButton>
       </CoolMode>
-      <div className="cv-iframe-container">
-        <iframe
-          ref={iframeRef}
-          title="CV Editor"
-          className="cv-iframe"
-        />
-      </div>
-   
     </div>
   );
 };
