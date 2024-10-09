@@ -2,39 +2,54 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import BorderBeam from "@/components/ui/shine-border";
 
-
 export default function SelectTemplate({ onTemplateSelect, initialTemplate }) {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(initialTemplate);
 
   useEffect(() => {
     fetchTemplates();
+    fetchSelectedTemplate();
   }, []);
 
   const fetchTemplates = async () => {
     try {
       const response = await axios.get('/api/templates');
       setTemplates(response.data);
-      if (response.data.length > 0 && !selectedTemplate) {
-        setSelectedTemplate(response.data[0].name);
-        onTemplateSelect(response.data[0].name);
-      }
     } catch (error) {
       console.error('Error fetching templates:', error);
     }
   };
 
-  const handleTemplateSelect = (template) => {
+  const fetchSelectedTemplate = async () => {
+    try {
+      const response = await axios.get('/api/selected-template');
+      if (response.data.success && response.data.selectedTemplate) {
+        setSelectedTemplate(response.data.selectedTemplate);
+        onTemplateSelect(response.data.selectedTemplate);
+      } else if (templates.length > 0) {
+        setSelectedTemplate(templates[0].name);
+        onTemplateSelect(templates[0].name);
+      }
+    } catch (error) {
+      console.error('Error fetching selected template:', error);
+    }
+  };
+
+  const handleTemplateSelect = async (template) => {
     setSelectedTemplate(template.name);
     onTemplateSelect(template.name);
+    try {
+      await axios.post('/api/selected-template', { templateName: template.name });
+    } catch (error) {
+      console.error('Error saving selected template:', error);
+    }
   };
 
   return (
-    <div className="my-8">
-      <h2 className="text-2xl font-bold mb-4">Choose a Template</h2>
+    <div className="mt-20 my-15">
+      <h2 className="text-2xl  mb-4 rajdhani-light">Choose a Template</h2>
       <div className="flex overflow-x-auto space-x-4 pb-4 p-1">
         {templates.map((template, index) => (
-          
           <div
             key={index}
             className={`flex-shrink-0 cursor-pointer transition-all duration-300`}
@@ -52,9 +67,8 @@ export default function SelectTemplate({ onTemplateSelect, initialTemplate }) {
                   transformOrigin: 'top left',
                 }}
               />
-              
             </div>
-            <p className="mt-2 text-center">{template.name}</p>
+            <p className="mt-2 text-center rajdhani-regular">{template.name}</p>
           </div>
         ))}
       </div>

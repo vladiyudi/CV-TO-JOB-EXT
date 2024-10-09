@@ -4,6 +4,7 @@ import { shootConfetti } from './assets/shotConfetti';
 import ShimmerButton from "@/components/ui/shimmer-button";
 import { CoolMode } from "@/components/ui/cool-mode";
 
+
 const EditableCV = ({ initialCV }) => {
   const [editedCV, setEditedCV] = useState(initialCV);
   const [isLoading, setIsLoading] = useState(false);
@@ -82,9 +83,6 @@ const EditableCV = ({ initialCV }) => {
         link.href = url;
         let fileName = response.headers['content-disposition'].split('=')[1];
         console.log(fileName)
-      
-   
-        
         link.setAttribute('download', `${fileName}`);
         document.body.appendChild(link);
         link.click();
@@ -103,7 +101,9 @@ const EditableCV = ({ initialCV }) => {
   };
 
   return (
-    <div className="editable-cv-container">
+    <div className="editable-cv-container mt-10 mb-5">
+       <h2 className="section-title rajdhani-regular">Edit CV</h2>
+       <p className='rajdhani-light'>Make sure it fits to a page</p>
 
       <div className="cv-iframe-container">
         <iframe

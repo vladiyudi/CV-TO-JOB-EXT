@@ -10,7 +10,7 @@ const slugs = [
   "bmw",
   "airbnb",
   "hubspot",
-  "attlasian",
+  "ibm",
   "adobe",
   "salesforce",
   "microsoft",
@@ -19,7 +19,7 @@ const slugs = [
   "uber",
   "intel",
   "mercedes",
-  "starbucks",
+  "barclays",
   "meta",
   "tesla",
   "dell",
@@ -35,7 +35,7 @@ const slugs = [
 
 export function IconCloudDemo() {
   return (
-    <div className="relative flex size-full max-w-lg items-center justify-center overflow-hidden rounded-lg border bg-background px-20 pb-20 pt-8 ">
+    <div className="relative flex size-full w-[25vw] items-center justify-center overflow-hidden rounded-lg ">
       <IconCloud iconSlugs={slugs} />
     </div>
   );

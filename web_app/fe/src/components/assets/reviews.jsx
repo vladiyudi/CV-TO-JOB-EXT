@@ -2,42 +2,43 @@ import { cn } from "@/lib/utils";
 
 export const reviews = [
   {
-    name: "Jack",
-    username: "@jack",
+    name: "Sergey Belov",
+    username: "@serg_belov",
     body: "This app saved me hours by tailoring my CV automatically. It matched my skills perfectly to job descriptions.",
     img: "../../../man1.png",
   },
   {
-    name: "Jill",
-    username: "@jill",
+    name: "Noa Levi",
+    username: "@noalevi",
     body: "I was struggling to get interviews with my old CV, but the AI-tailored version got me multiple offers in a week!",
     img: "../../../woman2.png",
   },
   {
-    name: "John",
-    username: "@john",
+    name: "Jason Reed",
+    username: "@jason_reed",
     body: "Creating custom CVs for each job used to take forever. Now I can apply to jobs in minutes, and it works!",
     img: "../../../man2.png",
   },
   {
-    name: "Jane",
-    username: "@jane",
+    name: "Shira Cohen",
+    username: "@shira_c",
     body: "I had no idea my CV was the issue until I used this app. Now I’m finally getting callbacks from recruiters.",
     img: "../../../woman1.png",
   },
   {
-    name: "Jenny",
-    username: "@jenny",
+    name: "Lauren Scott",
+    username: "@lauren_scott",
     body: "This app has taken the stress out of applying to jobs. I’ve never seen such accurate CV tailoring before.",
     img: "../../../man4.png",
   },
   {
-    name: "James",
-    username: "@james",
+    name: "Kenji Sato",
+    username: "@ktsato77",
     body: "AI-tailored CVs are a game changer! I’ve applied to more jobs and landed interviews that I couldn’t before.",
     img: "../../../man3.png",
   }
 ]
+
 
 
 
@@ -69,7 +70,7 @@ export const ReviewCard = ({
             <p className="text-xs font-medium dark:text-white/40">{username}</p>
           </div>
         </div>
-        <blockquote className="mt-2 text-sm">{body}</blockquote>
+        <blockquote className="mt-2 text-sm red">{body}</blockquote>
       </figure>
     );
   };

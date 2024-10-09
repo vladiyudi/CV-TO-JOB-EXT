@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const generateCvJson = require('../models/generateCvJson');
+const capitalizeWords = require('../models/helpers.js').capitalizeWords;
 
 async function createCV(req, res, next) {
   try {
@@ -8,11 +9,14 @@ async function createCV(req, res, next) {
 
   
       const cvJSON = await generateCvJson(cvRaw);
+      const cvJSONObject = JSON.parse(cvJSON);
+      const name = capitalizeWords(cvJSONObject.personalInfo.name);
+      const title = capitalizeWords(cvJSONObject.personalInfo.title);
       const jsonString = JSON.stringify(cvJSON);
 
     
       // await User.findByIdAndUpdate(req.user.id, { cvJSON: jsonString });
-      res.json({ cvJSON: jsonString });
+      res.json({ cvJSON: jsonString, nameTitle: { name, title } });
 
 
   } catch (error) {

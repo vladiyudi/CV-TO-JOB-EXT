@@ -11,6 +11,9 @@ import Ripple from "@/components/ui/ripple";
 import SelectTemplate from './components/SelectTemplate';
 import ShowInfo from './components/assets/StepOneInfo';
 import NextStepButton from './components/assets/NextStepButton';
+import { Progress } from "@/components/ui/progress"
+import ShowMatch from './components/assets/ShowMatch';
+
 
 axios.defaults.withCredentials = true;
 
@@ -49,6 +52,9 @@ const MainApp = () => {
   const selectTemplateRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const [progress, setProgress] = React.useState(0)
+  const [isIncrementing, setIsIncrementing] = useState(false);
+  const [nameTitle, setNameTitle] = useState({ name: '', title: '' });
 
   useEffect(() => {
     if (rewrittenCV) {
@@ -79,6 +85,33 @@ const MainApp = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    let timer;
+    if (isIncrementing) {
+      timer = setInterval(() => {
+        setProgress((prevProgress) => {
+          if (prevProgress >= 100) {
+            return 100;
+          }
+          return prevProgress + 10;
+        });
+      }, 2000);
+    }
+
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [isIncrementing]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setIsIncrementing(false);
+      setProgress(0);
+    }
+  }, [isLoading]);
+
   const fetchJobDescription = async () => {
     setIsJobLoading(true);
     try {
@@ -105,8 +138,8 @@ const MainApp = () => {
   };
 
   const handleGenerateCvJob = async () => {
-    selectTemplateRef.current?.scrollIntoView({ behavior: 'smooth' });
     setIsLoading(true);
+    setIsIncrementing(true);
     try {
       const response = await axios.post(`/matchJobCv`, { 
         cv, 
@@ -115,12 +148,13 @@ const MainApp = () => {
       
       });
       cvJSON.current = response.data.cvJSON;
+      setNameTitle(response.data.nameTitle);
     } catch (error) {
       console.error('Error:', error);
       alert('An error occurred while processing your request.');
     } finally {
       setIsLoading(false);
-     selectTemplateRef.current?.scrollIntoView({ behavior: 'smooth' });
+      selectTemplateRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -174,23 +208,30 @@ const MainApp = () => {
     <div className="app-container">
       <Ripple/>
       <div className="header">
-        <h1 className="app-title rajdhani-regular">Apply to a Dream Job in a steps:</h1>
+        <h1 className="app-title rajdhani-regular pl-12">Tailor CV to any job in a 3 steps:</h1>
         <ShinyButton onClick={handleLogout} className="rajdhani-light">Logout</ShinyButton>
       </div>
+    
       <div className="input-container-wrapper">
+     
         <CVInput cv={cv} setCV={handleCVChange} />
         <JobInput job={job} setJob={handleJobChange} isLoading={isJobLoading} />
+      
       </div>
-        <NextStepButton handleSubmit={ handleGenerateCvJob} isLoading={isLoading} text={'CV to Job'}/>
+ 
+      {isLoading && <Progress value={progress} />}  
+        <NextStepButton handleSubmit={handleGenerateCvJob} isLoading={isLoading} text={'CV to Job'}/>
         <ShowInfo info={'Step 1: Match CV to Job description'}/>
-      <div ref={selectTemplateRef}>
-        <SelectTemplate onTemplateSelect={handleTemplateSelect} initialTemplate={selectedTemplate} />
+      
+      <div ref={selectTemplateRef} className='mb-10'>
+        <ShowMatch nameTitle={nameTitle} />
+        <SelectTemplate onTemplateSelect={handleTemplateSelect} initialTemplate={selectedTemplate}/>
       </div>
-      <NextStepButton handleSubmit={ handleShowPDFPreview} isLoading={isLoading} text="Choose Template"/>
+      <NextStepButton handleSubmit={handleShowPDFPreview} isLoading={isLoading} text="Choose Template"/>
       <ShowInfo info={'Step 2: Choose template for new CV. Try as many as you want'}/>
       <div className="editable-cv-wrapper" ref={editableCVRef}>
-        <h2 className="section-title rajdhani-regular">CV Editor (A4 Format)</h2>
         <EditableCV initialCV={rewrittenCV} selectedTemplate={selectedTemplate} />
+        <ShowInfo info={'Step 3: Download PDF and apply to a job'} className="pt-10"/>
       </div>
     </div>
   );

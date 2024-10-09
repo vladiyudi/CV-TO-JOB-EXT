@@ -139,14 +139,34 @@ app.post('/api/auth/google', async (req, res) => {
   }
 });
 
-// Endpoint to receive job description from extension
-app.post('/api/job-description', isAuthenticated, async (req, res) => {
+// Modified endpoint to receive job description from frontend
+app.post('/api/job-description', async (req, res) => {
   const { jobDescription } = req.body;
   try {
-    await User.findByIdAndUpdate(req.user.id, { jobDescription });
-    res.json({ success: true, message: 'Job description saved successfully' });
+    let user;
+    if (req.user) {
+      user = await User.findByIdAndUpdate(req.user.id, { jobDescription }, { new: true });
+    } else {
+      user = await User.findOneAndUpdate({}, { jobDescription }, { new: true, upsert: true });
+    }
+    res.json({ success: true, message: 'Job description saved successfully', user });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error saving job description' });
+  }
+});
+
+// Modified endpoint to get job description
+app.get('/api/job-description', async (req, res) => {
+  try {
+    let user;
+    if (req.user) {
+      user = await User.findById(req.user.id);
+    } else {
+      user = await User.findOne();
+    }
+    res.json({ success: true, jobDescription: user ? user.jobDescription : '' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error retrieving job description' });
   }
 });
 
@@ -171,14 +191,34 @@ app.get('/api/cv-text', isAuthenticated, async (req, res) => {
   }
 });
 
-// New endpoint to save selected template
-app.post('/api/selected-template', isAuthenticated, async (req, res) => {
+// Modified endpoint to save selected template
+app.post('/api/selected-template', async (req, res) => {
   const { templateName } = req.body;
   try {
-    await User.findByIdAndUpdate(req.user.id, { selectedTemplate: templateName });
-    res.json({ success: true, message: 'Selected template saved successfully' });
+    let user;
+    if (req.user) {
+      user = await User.findByIdAndUpdate(req.user.id, { selectedTemplate: templateName }, { new: true });
+    } else {
+      user = await User.findOneAndUpdate({}, { selectedTemplate: templateName }, { new: true, upsert: true });
+    }
+    res.json({ success: true, message: 'Selected template saved successfully', user });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error saving selected template' });
+  }
+});
+
+// New endpoint to get selected template
+app.get('/api/selected-template', async (req, res) => {
+  try {
+    let user;
+    if (req.user) {
+      user = await User.findById(req.user.id);
+    } else {
+      user = await User.findOne();
+    }
+    res.json({ success: true, selectedTemplate: user ? user.selectedTemplate : null });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error retrieving selected template' });
   }
 });
 

@@ -45,7 +45,7 @@ export const CVInput = ({ cv, setCV }) => {
           id="cv"
           value={cv}
           onChange={(e) => setCV(e.target.value)}
-          placeholder="Upload CV PDF or enter it manually..."
+          placeholder="Upload CV from PDF or enter it manually..."
           className="input-textarea rajdhani-light"
           required
         />
