@@ -229,7 +229,15 @@ app.post('/matchJobCv', isAuthenticated, autoMatchMiddleware(User), matchJobCvRa
 
 app.post('/generatePdf', isAuthenticated, cvToHtml);  
 
-app.post('/generatePdfPreview', isAuthenticated, cvToHtmlPreview);
+app.post('/generatePdfPreview', isAuthenticated, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    req.user = user; // Attach the full user object to the request
+    cvToHtmlPreview(req, res, next);
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error retrieving user data' });
+  }
+});
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../fe/dist', 'index.html'));

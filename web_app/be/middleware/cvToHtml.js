@@ -4,12 +4,11 @@ const fs = require('fs').promises;
 const User = require('../models/User');
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
+const { capitalizeWords } = require('../models/helpers.js');
 
 async function cvToHtml(req, res) {
     try {
         const { cvHTML } = req.body;
-
-        // Extract name and job title
         const dom = new JSDOM(cvHTML);
         const name = dom.window.document.querySelector('.title-name').textContent.trim();
         const jobTitle = dom.window.document.querySelector('.job-title').textContent.trim();
@@ -28,17 +27,16 @@ async function cvToHtml(req, res) {
         await browser.close();
 
         // Generate a filename using the extracted name if not provided
-        const pdfFilename =`${name.replace(/\s+/g, '_')}_${jobTitle.replace(/\s+/g, '_')}_CV.pdf`;
+        const pdfFilename =`${name.replace(/\s+/g, '_')}_${jobTitle.replace(/\s+/g, '_')}`;
 
         // Ensure headers are set correctly
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=${pdfFilename}`);
+        res.setHeader('Content-Disposition', `attachment; filename=${capitalizeWords(pdfFilename)}.pdf`);
         res.setHeader('Content-Length', pdfBuffer.length);
 
         // Send the PDF buffer
         res.send(Buffer.from(pdfBuffer));
 
-        console.log(`Generated CV for ${name}, Job Title: ${jobTitle}`);
 
     } catch (err) {
         console.error('Error:', err);

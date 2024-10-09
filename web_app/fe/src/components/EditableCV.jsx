@@ -3,12 +3,44 @@ import axios from 'axios';
 import { shootConfetti } from './assets/shotConfetti';
 import ShimmerButton from "@/components/ui/shimmer-button";
 import { CoolMode } from "@/components/ui/cool-mode";
+import { Progress } from "@/components/ui/progress"
+import ShowInfo from '../components/assets/StepOneInfo'
 
 
 const EditableCV = ({ initialCV }) => {
   const [editedCV, setEditedCV] = useState(initialCV);
   const [isLoading, setIsLoading] = useState(false);
   const iframeRef = useRef(null);
+  const [progress, setProgress] = React.useState(0)
+  const [isIncrementing, setIsIncrementing] = useState(false);
+
+
+  useEffect(() => {
+    let timer;
+    if (isIncrementing) {
+      timer = setInterval(() => {
+        setProgress((prevProgress) => {
+          if (prevProgress >= 100) {
+            return 100;
+          }
+          return prevProgress + 17;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [isIncrementing]);
+
+  useEffect(() => {
+    if (!isLoading) {
+      setIsIncrementing(false);
+      setProgress(0);
+    }
+  }, [isLoading]);
 
   useEffect(() => {
     if (iframeRef.current) {
@@ -58,6 +90,7 @@ const EditableCV = ({ initialCV }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setIsIncrementing(true);
 
     try {
       const updatedContent = iframeRef.current.contentDocument.body.innerHTML;
@@ -75,7 +108,7 @@ const EditableCV = ({ initialCV }) => {
       );
 
  
-      shootConfetti();
+
       if (response.headers['content-type'] === 'application/pdf') {
         const blob = new Blob([response.data], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
@@ -88,7 +121,7 @@ const EditableCV = ({ initialCV }) => {
         link.click();
         link.remove();
         window.URL.revokeObjectURL(url);
-        alert('Your CV has been generated and downloaded as a PDF.');
+        shootConfetti();
       } else {
         alert('An error occurred while generating the PDF.');
       }
@@ -112,6 +145,8 @@ const EditableCV = ({ initialCV }) => {
           className="cv-iframe"
         />
       </div>
+      <div className='flex flex-col'>
+        <div className='flex justify-center'>
       <CoolMode>
          <ShimmerButton
         onClick={handleSubmit}
@@ -121,6 +156,14 @@ const EditableCV = ({ initialCV }) => {
         {isLoading ? 'Generating PDF...' : 'Generate PDF from Edited CV'}
       </ShimmerButton>
       </CoolMode>
+      </div>
+      <div className='pt-5'>
+      <ShowInfo info={'Step 3: Download PDF and apply to a job'} className="pt-5"/>
+      </div>
+      <div className='w-[800px] mt-5'>
+      {isLoading && <Progress value={progress} />}  
+      </div>
+      </div>
     </div>
   );
 };

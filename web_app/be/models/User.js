@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   email: String,
   jobDescription: String,
   cvText: String,
+  cvJSON: String,  
   selectedTemplate: { type: String, default: 'cleanDesign' }
 });
 

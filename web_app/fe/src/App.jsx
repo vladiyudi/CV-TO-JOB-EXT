@@ -231,7 +231,6 @@ const MainApp = () => {
       <ShowInfo info={'Step 2: Choose template for new CV. Try as many as you want'}/>
       <div className="editable-cv-wrapper" ref={editableCVRef}>
         <EditableCV initialCV={rewrittenCV} selectedTemplate={selectedTemplate} />
-        <ShowInfo info={'Step 3: Download PDF and apply to a job'} className="pt-10"/>
       </div>
     </div>
   );
