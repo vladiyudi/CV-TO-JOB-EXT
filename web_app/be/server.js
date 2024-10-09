@@ -239,6 +239,7 @@ app.post('/generatePdfPreview', isAuthenticated, async (req, res, next) => {
   }
 });
 
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../fe/dist', 'index.html'));
 });

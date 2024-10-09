@@ -5,8 +5,7 @@ import ShimmerButton from "@/components/ui/shimmer-button";
 import { CoolMode } from "@/components/ui/cool-mode";
 import { Progress } from "@/components/ui/progress"
 import ShowInfo from '../components/assets/StepOneInfo'
-import { toast} from "@/hooks/use-toast"
-import { RenderingCancelledException } from 'pdfjs-dist';
+
 
 
 const EditableCV = ({ initialCV }) => {

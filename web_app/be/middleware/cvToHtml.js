@@ -21,7 +21,7 @@ async function cvToHtml(req, res) {
         const pdfBuffer = await page.pdf({
             format: 'A4',
             printBackground: true,
-            margin: { top: '1cm', right: '1cm', bottom: '1cm', left: '1cm' }
+            margin: { top: '0.5cm', right: '1cm', bottom: '0.5cm', left: '1cm' }
         });
 
         await browser.close();
