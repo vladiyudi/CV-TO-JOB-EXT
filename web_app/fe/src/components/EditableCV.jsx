@@ -5,6 +5,8 @@ import ShimmerButton from "@/components/ui/shimmer-button";
 import { CoolMode } from "@/components/ui/cool-mode";
 import { Progress } from "@/components/ui/progress"
 import ShowInfo from '../components/assets/StepOneInfo'
+import { toast} from "@/hooks/use-toast"
+import { RenderingCancelledException } from 'pdfjs-dist';
 
 
 const EditableCV = ({ initialCV }) => {
@@ -94,6 +96,7 @@ const EditableCV = ({ initialCV }) => {
 
     try {
       const updatedContent = iframeRef.current.contentDocument.body.innerHTML;
+
       setEditedCV(updatedContent);
 
       const response = await axios.post(
@@ -106,8 +109,6 @@ const EditableCV = ({ initialCV }) => {
           }
         }
       );
-
- 
 
       if (response.headers['content-type'] === 'application/pdf') {
         const blob = new Blob([response.data], { type: 'application/pdf' });

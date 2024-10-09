@@ -1,6 +1,6 @@
 const { CVHTMLfromTemp } = require('../models/CVHTMLfromTemp.js');
 const User = require('../models/User');
-const generateCvJson = require('../models/generateCvJson');
+
 
 async function cvToHtmlPreview(req, res) {
     try {

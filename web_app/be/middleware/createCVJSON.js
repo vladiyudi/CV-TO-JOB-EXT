@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const generateCvJson = require('../models/generateCvJson');
 const capitalizeWords = require('../models/helpers.js').capitalizeWords;
+const { CVHTMLfromTemp } = require('../models/CVHTMLfromTemp.js');
 
 async function createCV(req, res) {
   try {
@@ -13,9 +14,6 @@ async function createCV(req, res) {
     const title = capitalizeWords(cvJSONObject.personalInfo.title);
     const jsonString = JSON.stringify(cvJSON);
 
-    console.log('User ID:', req.user.id);
-    console.log('CV JSON to be saved:', jsonString);
-
     // Find the user by ID
     const user = await User.findById(req.user.id);
     if (!user) {
@@ -25,13 +23,17 @@ async function createCV(req, res) {
 
     // Update the cvJSON field
     user.cvJSON = jsonString;
+    let cvToShow = user.cvJSON;
+    cvToShow = typeof cvToShow === 'string' ? JSON.parse(cvToShow) : cvToShow;
+
+    let cvHTML = await CVHTMLfromTemp(cvJSON, user.selectedTemplate);
 
     // Save the updated user document
     await user.save();
 
-    console.log('Updated user:', user);
     
-    res.json({ cvJSON: jsonString, nameTitle: { name, title } });
+    
+    res.json({ cvJSON: jsonString, nameTitle: { name, title }, cvHTML });
 
   } catch (error) {
     console.error('Error in createCV:', error);

@@ -13,6 +13,9 @@ import ShowInfo from './components/assets/StepOneInfo';
 import NextStepButton from './components/assets/NextStepButton';
 import { Progress } from "@/components/ui/progress"
 import ShowMatch from './components/assets/ShowMatch';
+import { Toaster } from "@/components/ui/toaster"
+import { useToast } from "@/hooks/use-toast"
+
 
 
 axios.defaults.withCredentials = true;
@@ -55,12 +58,13 @@ const MainApp = () => {
   const [progress, setProgress] = React.useState(0)
   const [isIncrementing, setIsIncrementing] = useState(false);
   const [nameTitle, setNameTitle] = useState({ name: '', title: '' });
+  const { toast } = useToast()
 
-  useEffect(() => {
-    if (rewrittenCV) {
-      editableCVRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [rewrittenCV]);
+  // useEffect(() => {
+  //   if (rewrittenCV) {
+  //     editableCVRef.current?.scrollIntoView({ behavior: 'smooth' });
+  //   }
+  // }, [rewrittenCV]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -138,6 +142,13 @@ const MainApp = () => {
   };
 
   const handleGenerateCvJob = async () => {
+    if (!cv || !job) {
+      toast({
+        title: 'CV or Job is empty',
+        description: 'Please fill them out to proceed.',
+      })
+    }
+    else {
     setIsLoading(true);
     setIsIncrementing(true);
     try {
@@ -149,13 +160,14 @@ const MainApp = () => {
       });
       cvJSON.current = response.data.cvJSON;
       setNameTitle(response.data.nameTitle);
+      setRewrittenCV(response.data.cvHTML);
     } catch (error) {
       console.error('Error:', error);
       alert('An error occurred while processing your request.');
     } finally {
       setIsLoading(false);
       selectTemplateRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
+    }}
   };
 
   const handleLogout = async () => {
@@ -172,6 +184,7 @@ const MainApp = () => {
       
       const response = await axios.post(`/generatePdfPreview`, { cvJSON: cvJSON.current, templateName: selectedTemplate });
       setRewrittenCV(response.data.cvHTML);
+      editableCVRef.current?.scrollIntoView({ behavior: 'smooth' });
     } catch (error) {
       console.error('Error generating PDF preview:', error);
     }
@@ -246,6 +259,7 @@ const App = () => {
           element={
             <ProtectedRoute>
               <MainApp />
+              <Toaster />
             </ProtectedRoute>
           }
         />
