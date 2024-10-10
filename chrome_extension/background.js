@@ -16,7 +16,11 @@ function createLoginUrl(email, name, picture) {
 }
 
 function sendMessageToPopup(message) {
-  chrome.runtime.sendMessage(message);
+  chrome.runtime.sendMessage(message, (response) => {
+    if (chrome.runtime.lastError) {
+      console.error('Error sending message to popup:', chrome.runtime.lastError);
+    }
+  });
 }
 
 function findOrCreateWebappTab() {
@@ -26,15 +30,30 @@ function findOrCreateWebappTab() {
     url.searchParams.append('timestamp', Date.now()); 
 
     chrome.tabs.query({url: `${WEBAPP_URL}/*`}, function(tabs) {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+        resolve({success: false, error: chrome.runtime.lastError.message});
+        return;
+      }
       if (tabs.length > 0) {
         // Webapp tab exists, update and focus it
         chrome.tabs.update(tabs[0].id, {active: true, url: url.toString()}, function(tab) {
-          resolve({success: true, newTabCreated: false, tabId: tab.id});
+          if (chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError);
+            resolve({success: false, error: chrome.runtime.lastError.message});
+          } else {
+            resolve({success: true, newTabCreated: false, tabId: tab.id});
+          }
         });
       } else {
         // Webapp tab doesn't exist, create a new one
         chrome.tabs.create({url: url.toString()}, function(tab) {
-          resolve({success: true, newTabCreated: true, tabId: tab.id});
+          if (chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError);
+            resolve({success: false, error: chrome.runtime.lastError.message});
+          } else {
+            resolve({success: true, newTabCreated: true, tabId: tab.id});
+          }
         });
       }
     });
@@ -105,11 +124,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   if (request.action === 'openWebapp') {
     findOrCreateWebappTab().then(result => {
-      if (result.success) {
-        sendResponse({ success: true, newTabCreated: result.newTabCreated });
-      } else {
-        sendResponse({ success: false, error: 'Failed to open webapp' });
-      }
+      sendResponse(result);
     });
     return true;
   }
@@ -120,13 +135,23 @@ chrome.runtime.onMessageExternal.addListener(
   function(request, sender, sendResponse) {
     if (request.action === "loginApproved" || request.action === "loginComplete") {
       chrome.storage.local.set({ isLoggedIn: true }, function() {
-        sendResponse({ success: true });
-        sendMessageToPopup({ action: "loginStatus", status: "success" });
+        if (chrome.runtime.lastError) {
+          console.error('Error setting login status:', chrome.runtime.lastError);
+          sendResponse({ success: false, error: chrome.runtime.lastError.message });
+        } else {
+          sendResponse({ success: true });
+          sendMessageToPopup({ action: "loginStatus", status: "success" });
+        }
       });
     } else if (request.action === "logout") {
       chrome.storage.local.set({ isLoggedIn: false }, function() {
-        sendResponse({ success: true });
-        sendMessageToPopup({ action: "loginStatus", status: "loggedOut" });
+        if (chrome.runtime.lastError) {
+          console.error('Error setting logout status:', chrome.runtime.lastError);
+          sendResponse({ success: false, error: chrome.runtime.lastError.message });
+        } else {
+          sendResponse({ success: true });
+          sendMessageToPopup({ action: "loginStatus", status: "loggedOut" });
+        }
       });
     }
     return true;
@@ -141,5 +166,19 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
     } else {
       console.log("User logged out");
     }
+  }
+});
+
+// Listen for tab updates
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete' && tab.url && tab.url.startsWith('https://www.linkedin.com/jobs/')) {
+    chrome.tabs.sendMessage(tabId, { action: 'initContentScript' }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error('Error sending initContentScript message:', chrome.runtime.lastError);
+        // Don't throw an error, just log it
+      } else if (response && response.success) {
+        console.log('Content script initialized successfully');
+      }
+    });
   }
 });

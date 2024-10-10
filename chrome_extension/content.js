@@ -1,5 +1,12 @@
 console.log('Content script loaded');
 
+let isInitialized = false;
+
+function initContentScript() {
+  console.log('Content script initialized');
+  isInitialized = true;
+}
+
 function scrapeJobDescription() {
   const possibleSelectors = [
     '.description__text',
@@ -37,8 +44,12 @@ function scrapeJobDescription() {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log('Message received in content script:', request);
   if (request.action === 'ping') {
-    sendResponse({action: 'pong'});
+    sendResponse({action: 'pong', initialized: isInitialized});
   } else if (request.action === 'scrapeJobDescription') {
+    if (!isInitialized) {
+      sendResponse({success: false, error: 'Content script not initialized'});
+      return;
+    }
     try {
       const jobDescription = scrapeJobDescription();
       if (jobDescription) {
@@ -50,6 +61,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       console.error('Error scraping job description:', error);
       sendResponse({success: false, error: 'Error scraping job description'});
     }
+  } else if (request.action === 'initContentScript') {
+    initContentScript();
+    sendResponse({success: true});
   }
   return true;
 });
+
+// Initialize the content script when it's first loaded
+initContentScript();

@@ -1,21 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "CV Job Matcher",
+  "name": "SuperCV",
   "version": "1.0",
-  "description": "Capture job descriptions from LinkedIn and match with your CV",
+  "description": "Write tailored CV to any job on LinkedIn and generate PDF in seconds",
   "permissions": [
     "activeTab",
     "storage",
     "identity",
-    "tabs"
+    "tabs",
+    "scripting"
   ],
   "host_permissions": [
     "https://www.linkedin.com/*",
-    "http://localhost:5173/*",
-    "http://localhost:8080/*",
     "https://www.googleapis.com/*",
-    "https://supercv.online/*",
-    "https://cv-to-job-app-47779369171.europe-west1.run.app/*"
+    "https://supercv.online/*"
   ],
   "action": {
     "default_popup": "popup.html"
@@ -37,10 +35,10 @@
     ]
   },
   "externally_connectable": {
-    "matches": ["http://localhost:5173/*", "http://localhost:8080/*", "https://supercv.online/*", "https://cv-to-job-app-47779369171.europe-west1.run.app/*"]
+    "matches": ["https://supercv.online/*"]
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://localhost:5173 http://localhost:8080 https://www.googleapis.com https://supercv.online https://cv-to-job-app-47779369171.europe-west1.run.app;"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://www.googleapis.com https://supercv.online;"
   },
   "icons": {
     "16": "images/superCVlogoSimple.png",

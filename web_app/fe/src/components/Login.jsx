@@ -4,7 +4,7 @@ import axios from 'axios';
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import Meteors from "@/components/ui/meteors";
 import Marquee from "@/components/ui/marquee";
-import { firstRow, reviews, ReviewCard } from './assets/reviews';
+import { reviews, ReviewCard } from './assets/reviews';
 import TypingAnimation from "@/components/ui/typing-animation";
 import BlurIn from "@/components/ui/blur-in";
 import { ListFade } from "./assets/ListFade";
@@ -63,7 +63,7 @@ const Login = () => {
 
     <BlurIn
       word="Get Hired with Ai-Powered CVs"
-      className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-900/80 bg-clip-text text-center text-7xl leading-none text-transparent dark:from-white dark:to-slate-900/100 rajdhani-regular mt-20"
+      className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-900/80 bg-clip-text text-center text-7xl leading-none text-transparent dark:from-white dark:to-slate-900/100 rajdhani-regular mt-10"
     />
     
     <div className="flex-grow flex items-center justify-center w-full">

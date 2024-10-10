@@ -15,6 +15,7 @@ import { Progress } from "@/components/ui/progress"
 import ShowMatch from './components/assets/ShowMatch';
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/hooks/use-toast"
+import PrivacyPolicy from './PrivacyPolicy';
 
 
 
@@ -220,9 +221,11 @@ const MainApp = () => {
   return (
     <div className="app-container">
       <Ripple/>
-      <div className="header">
+      <div className="header" >
         <h1 className="app-title rajdhani-regular pl-12">Tailor CV to any job in a 3 steps:</h1>
+        <div>
         <ShinyButton onClick={handleLogout} className="rajdhani-light">Logout</ShinyButton>
+        </div>
       </div>
     
       <div className="input-container-wrapper">
@@ -245,6 +248,7 @@ const MainApp = () => {
       <div className="editable-cv-wrapper" ref={editableCVRef}>
         <EditableCV initialCV={rewrittenCV} selectedTemplate={selectedTemplate} />
       </div>
+      <a href="/privacy-policy" className='text-center rajdhani-light text-sm text-gray-500'>Privacy policy</a>
     </div>
   );
 };
@@ -263,6 +267,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/privacy-policy" element={<PrivacyPolicy/>} />
       </Routes>
     </Router>
   );

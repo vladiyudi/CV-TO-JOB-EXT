@@ -34,7 +34,10 @@ document.addEventListener('DOMContentLoaded', function() {
   loginButton.addEventListener('click', function() {
     updateStatus('Initiating login process...', 'info');
     chrome.runtime.sendMessage({action: 'login'}, function(response) {
-      if (response && response.success) {
+      if (chrome.runtime.lastError) {
+        console.error('Error during login:', chrome.runtime.lastError);
+        updateStatus('Failed to initiate login. Please try again.', 'error');
+      } else if (response && response.success) {
         updateStatus('Login tab opened. Please complete the login process.', 'info');
       } else {
         updateStatus('Failed to initiate login. Please try again.', 'error');
@@ -45,14 +48,19 @@ document.addEventListener('DOMContentLoaded', function() {
   captureButton.addEventListener('click', function() {
     updateStatus('Checking LinkedIn page...', 'info');
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+        updateStatus('Error accessing current tab. Please try again.', 'error');
+        return;
+      }
       const tab = tabs[0];
       if (tab.url.startsWith('https://www.linkedin.com/jobs/')) {
-        pingContentScript(tab, function(pong) {
-          if (pong) {
+        injectContentScriptIfNeeded(tab, function(success) {
+          if (success) {
             updateStatus('Capturing job description...', 'info');
             sendMessageToContentScript(tab);
           } else {
-            updateStatus('Please refresh the LinkedIn page and try again.', 'error');
+            updateStatus('Failed to initialize content script. Please refresh the page and try again.', 'error');
           }
         });
       } else {
@@ -61,13 +69,28 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  function pingContentScript(tab, callback) {
+  function injectContentScriptIfNeeded(tab, callback) {
     chrome.tabs.sendMessage(tab.id, {action: 'ping'}, function(response) {
       if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
-        callback(false);
+        // Content script is not injected, inject it
+        chrome.scripting.executeScript(
+          {
+            target: {tabId: tab.id},
+            files: ['content.js']
+          },
+          function(injectionResults) {
+            if (chrome.runtime.lastError) {
+              console.error('Error injecting content script:', chrome.runtime.lastError);
+              callback(false);
+            } else {
+              console.log('Content script injected successfully');
+              callback(true);
+            }
+          }
+        );
       } else {
-        callback(response && response.action === 'pong');
+        // Content script is already injected
+        callback(true);
       }
     });
   }
@@ -75,7 +98,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function sendMessageToContentScript(tab) {
     chrome.tabs.sendMessage(tab.id, {action: 'scrapeJobDescription'}, function(response) {
       if (chrome.runtime.lastError) {
-        updateStatus(chrome.runtime.lastError.message, 'error');
+        console.error(chrome.runtime.lastError);
+        updateStatus('Error communicating with the page. Please refresh and try again.', 'error');
         return;
       }
       if (response && response.success && response.jobDescription) {
@@ -87,7 +111,10 @@ document.addEventListener('DOMContentLoaded', function() {
           action: 'sendToWebapp',
           jobDescription: response.jobDescription
         }, function(sendResponse) {
-          if (sendResponse && sendResponse.success) {
+          if (chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError);
+            updateStatus('Error sending job description. Please try again.', 'error');
+          } else if (sendResponse && sendResponse.success) {
             updateStatus('Ready to tailor your CV!', 'success');
           } else {
             updateStatus('Failed to process job description. Please try again.', 'error');
@@ -102,7 +129,10 @@ document.addEventListener('DOMContentLoaded', function() {
   matchButton.addEventListener('click', function() {
     updateStatus('Opening Super CV webapp...', 'info');
     chrome.runtime.sendMessage({action: 'openWebapp'}, function(response) {
-      if (response && response.success) {
+      if (chrome.runtime.lastError) {
+        console.error(chrome.runtime.lastError);
+        updateStatus('Error opening Super CV webapp. Please try again.', 'error');
+      } else if (response && response.success) {
         window.close(); // Close the popup after redirecting
       } else {
         updateStatus('Failed to open Super CV webapp. Please try again.', 'error');
@@ -115,8 +145,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (request.action === "loginStatus") {
       if (request.status === "success") {
         chrome.storage.local.set({isLoggedIn: true}, function() {
-          updateUI(true);
-          updateStatus('Logged in successfully! You can now use Super CV.', 'success');
+          if (chrome.runtime.lastError) {
+            console.error('Error setting login status:', chrome.runtime.lastError);
+            updateStatus('Error updating login status. Please try again.', 'error');
+          } else {
+            updateUI(true);
+            updateStatus('Logged in successfully! You can now use Super CV.', 'success');
+          }
         });
       } else {
         updateStatus('Login failed. Please try again.', 'error');
