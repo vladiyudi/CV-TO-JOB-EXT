@@ -2,17 +2,29 @@ document.addEventListener('DOMContentLoaded', function() {
   const loginButton = document.getElementById('loginButton');
   const captureButton = document.getElementById('captureButton');
   const matchButton = document.getElementById('matchButton');
+  const menuButton = document.querySelector('.menu-button');
   const loginSection = document.getElementById('loginSection');
   const actionSection = document.getElementById('actionSection');
   const statusDiv = document.getElementById('status');
-
-  const WEBAPP_URL = 'http://localhost:5173'; // Frontend URL
-  const API_URL = 'http://localhost:8080'; // Backend URL
+  const jobDescriptionTextarea = document.getElementById('jobDescription');
+  const introText = document.querySelector('.intro-text');
 
   function updateUI(isLoggedIn) {
-    loginSection.style.display = isLoggedIn ? 'none' : 'block';
-    actionSection.style.display = isLoggedIn ? 'block' : 'none';
+    loginSection.style.display = isLoggedIn ? 'none' : 'flex';
+    actionSection.style.display = isLoggedIn ? 'flex' : 'none';
     statusDiv.textContent = '';
+    jobDescriptionTextarea.value = '';
+    updateButtonHighlight();
+  }
+
+  function updateButtonHighlight() {
+    if (jobDescriptionTextarea.value.trim() === '') {
+      captureButton.classList.add('highlighted');
+      matchButton.classList.remove('highlighted');
+    } else {
+      captureButton.classList.remove('highlighted');
+      matchButton.classList.add('highlighted');
+    }
   }
 
   chrome.storage.local.get(['isLoggedIn'], function(result) {
@@ -20,31 +32,31 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   loginButton.addEventListener('click', function() {
-    statusDiv.textContent = 'Initiating login process...';
+    updateStatus('Initiating login process...', 'info');
     chrome.runtime.sendMessage({action: 'login'}, function(response) {
       if (response && response.success) {
-        statusDiv.textContent = 'Login tab opened. Please complete the login process in the new tab.';
+        updateStatus('Login tab opened. Please complete the login process.', 'info');
       } else {
-        statusDiv.textContent = 'Failed to initiate login: ' + (response ? response.error : 'Unknown error');
+        updateStatus('Failed to initiate login. Please try again.', 'error');
       }
     });
   });
 
   captureButton.addEventListener('click', function() {
-    statusDiv.textContent = 'Checking content script...';
+    updateStatus('Checking LinkedIn page...', 'info');
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
       const tab = tabs[0];
       if (tab.url.startsWith('https://www.linkedin.com/jobs/')) {
         pingContentScript(tab, function(pong) {
           if (pong) {
-            statusDiv.textContent = 'Content script ready. Capturing job description...';
+            updateStatus('Capturing job description...', 'info');
             sendMessageToContentScript(tab);
           } else {
-            statusDiv.textContent = 'Error: Content script not accessible. Please refresh the page and try again.';
+            updateStatus('Please refresh the LinkedIn page and try again.', 'error');
           }
         });
       } else {
-        statusDiv.textContent = 'Error: Please navigate to a LinkedIn job page before capturing.';
+        updateStatus('Please navigate to a LinkedIn job page before capturing.', 'error');
       }
     });
   });
@@ -63,40 +75,37 @@ document.addEventListener('DOMContentLoaded', function() {
   function sendMessageToContentScript(tab) {
     chrome.tabs.sendMessage(tab.id, {action: 'scrapeJobDescription'}, function(response) {
       if (chrome.runtime.lastError) {
-        statusDiv.textContent = 'Error: ' + chrome.runtime.lastError.message;
+        updateStatus(chrome.runtime.lastError.message, 'error');
         return;
       }
       if (response && response.success && response.jobDescription) {
-        const maxLength = 500; // Set a maximum length for the displayed job description
-        let displayedText = response.jobDescription.length > maxLength 
-          ? response.jobDescription.substring(0, maxLength) + '...'
-          : response.jobDescription;
-        
-        statusDiv.textContent = 'Job description captured successfully:\n\n' + displayedText;
+        jobDescriptionTextarea.value = response.jobDescription;
+        updateStatus('Job description captured successfully.', 'success');
+        updateButtonHighlight();
         
         chrome.runtime.sendMessage({
           action: 'sendToWebapp',
           jobDescription: response.jobDescription
         }, function(sendResponse) {
           if (sendResponse && sendResponse.success) {
-            statusDiv.textContent += '\n\nJob description sent to webapp successfully.';
+            updateStatus('Ready to tailor your CV!', 'success');
           } else {
-            statusDiv.textContent += '\n\nFailed to send job description to webapp: ' + (sendResponse ? sendResponse.error : 'Unknown error');
+            updateStatus('Failed to process job description. Please try again.', 'error');
           }
         });
       } else {
-        statusDiv.textContent = 'Failed to capture job description: ' + (response ? response.error : 'Unknown error');
+        updateStatus('Failed to capture job description. Please try again.', 'error');
       }
     });
   }
 
   matchButton.addEventListener('click', function() {
-    statusDiv.textContent = 'Opening webapp...';
+    updateStatus('Opening Super CV webapp...', 'info');
     chrome.runtime.sendMessage({action: 'openWebapp'}, function(response) {
       if (response && response.success) {
         window.close(); // Close the popup after redirecting
       } else {
-        statusDiv.textContent = 'Failed to open webapp: ' + (response ? response.error : 'Unknown error');
+        updateStatus('Failed to open Super CV webapp. Please try again.', 'error');
       }
     });
   });
@@ -107,11 +116,19 @@ document.addEventListener('DOMContentLoaded', function() {
       if (request.status === "success") {
         chrome.storage.local.set({isLoggedIn: true}, function() {
           updateUI(true);
-          statusDiv.textContent = 'Logged in successfully!';
+          updateStatus('Logged in successfully! You can now use Super CV.', 'success');
         });
       } else {
-        statusDiv.textContent = 'Login failed: ' + (request.error || 'Unknown error');
+        updateStatus('Login failed. Please try again.', 'error');
       }
     }
   });
+
+  function updateStatus(message, type) {
+    statusDiv.textContent = message;
+    statusDiv.className = 'status ' + type;
+    introText.style.display = message ? 'none' : 'block';
+  }
+
+  jobDescriptionTextarea.addEventListener('input', updateButtonHighlight);
 });

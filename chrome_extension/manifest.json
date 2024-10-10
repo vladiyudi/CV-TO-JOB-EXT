@@ -43,9 +43,9 @@
     "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://localhost:5173 http://localhost:8080 https://www.googleapis.com https://supercv.online https://cv-to-job-app-47779369171.europe-west1.run.app;"
   },
   "icons": {
-    "16": "images/logo16.png",
-    "32": "images/logo32.png",
-    "48": "images/logo48.png",
-    "128": "images/logo128.png"
+    "16": "images/superCVlogoSimple.png",
+    "32": "images/superCVlogoSimple.png",
+    "48": "images/superCVlogoSimple.png",
+    "128": "images/superCVlogoSimple.png"
   }
 }
