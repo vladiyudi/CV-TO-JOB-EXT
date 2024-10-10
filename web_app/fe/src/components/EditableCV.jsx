@@ -153,7 +153,7 @@ const EditableCV = ({ initialCV }) => {
         disabled={isLoading}
         className="generate-pdf-button rajdhani-light"
       >
-        {isLoading ? 'Generating PDF...' : 'Generate PDF from Edited CV'}
+        {isLoading ? 'Generating PDF...' : 'Generate PDF'}
       </ShimmerButton>
       </CoolMode>
       </div>
