@@ -16,6 +16,7 @@ import ShowMatch from './components/assets/ShowMatch';
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/hooks/use-toast"
 import PrivacyPolicy from './PrivacyPolicy';
+import ShowDailyLimit from './components/ShowDailyLimit';
 
 
 
@@ -60,6 +61,7 @@ const MainApp = () => {
   const [isIncrementing, setIsIncrementing] = useState(false);
   const [nameTitle, setNameTitle] = useState({ name: '', title: '' });
   const { toast } = useToast()
+  const [refreshDailyLimit, setRefreshDailyLimit] = useState(0);
 
   // useEffect(() => {
   //   if (rewrittenCV) {
@@ -162,6 +164,7 @@ const MainApp = () => {
       cvJSON.current = response.data.cvJSON;
       setNameTitle(response.data.nameTitle);
       setRewrittenCV(response.data.cvHTML);
+      setRefreshDailyLimit(prev => prev + 1)
     } catch (error) {
       console.error('Error:', error);
       alert('An error occurred while processing your request.');
@@ -222,7 +225,8 @@ const MainApp = () => {
     <div className="app-container">
       <Ripple/>
       <div className="header" >
-        <h1 className="app-title rajdhani-regular pl-12">Tailor CV to any job in a 3 steps:</h1>
+        <ShowDailyLimit refreshTrigger={refreshDailyLimit} />
+        <h1 className="app-title rajdhani-regular ">Tailor CV to any job in a 3 steps:</h1>
         <div>
         <ShinyButton onClick={handleLogout} className="rajdhani-light">Logout</ShinyButton>
         </div>

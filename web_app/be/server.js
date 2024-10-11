@@ -15,6 +15,7 @@ const { autoMatchMiddleware } = require('./middleware/autoMatchMiddleware');
 const { getTemplates } = require('./controllers/templateController');
 const User = require('./models/User');
 const cvToHtmlPreview = require('./controllers/cvToHtmlPreview');
+const checkDailyLimit = require('./middleware/checkDailyLimit');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -37,7 +38,8 @@ async (accessToken, refreshToken, profile, done) => {
       user = await User.create({
         googleId: profile.id,
         displayName: profile.displayName,
-        email: profile.emails[0].value
+        email: profile.emails[0].value,
+        dailyLimit: parseInt(process.env.DAILY_LIMIT_GENERATIONS) || 10
       });
     }
     return done(null, user);
@@ -125,7 +127,8 @@ app.post('/api/auth/google', async (req, res) => {
       user = await User.create({
         email: email,
         displayName: name,
-        googleId: email // Using email as googleId for simplicity
+        googleId: email, // Using email as googleId for simplicity
+        dailyLimit: parseInt(process.env.DAILY_LIMIT_GENERATIONS) || 10
       });
     }
     req.login(user, (err) => {
@@ -225,11 +228,26 @@ app.get('/api/selected-template', async (req, res) => {
 // New endpoint to get templates
 app.get('/api/templates', getTemplates);
 
-app.post('/matchJobCv', isAuthenticated, autoMatchMiddleware(User), matchJobCvRaw, createCV);
+// New endpoint to get user's daily limit information
+app.get('/api/daily-limit', isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    res.json({
+      success: true,
+      dailyLimit: user.dailyLimit,
+      generationsToday: user.generationsToday,
+      lastResetDate: user.lastResetDate
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error retrieving daily limit information' });
+  }
+});
 
-app.post('/generatePdf', isAuthenticated, cvToHtml);  
+app.post('/matchJobCv', isAuthenticated, checkDailyLimit, autoMatchMiddleware(User), matchJobCvRaw, createCV);
 
-app.post('/generatePdfPreview', isAuthenticated, async (req, res, next) => {
+app.post('/generatePdf', isAuthenticated, checkDailyLimit, cvToHtml);  
+
+app.post('/generatePdfPreview', isAuthenticated, checkDailyLimit, async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
     req.user = user; // Attach the full user object to the request
@@ -238,7 +256,6 @@ app.post('/generatePdfPreview', isAuthenticated, async (req, res, next) => {
     res.status(500).json({ success: false, message: 'Error retrieving user data' });
   }
 });
-
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../fe/dist', 'index.html'));

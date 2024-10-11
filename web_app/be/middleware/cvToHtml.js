@@ -1,7 +1,4 @@
 const puppeteer = require('puppeteer');
-const Handlebars = require('handlebars');
-const fs = require('fs').promises;
-const User = require('../models/User');
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 const { capitalizeWords } = require('../models/helpers.js');

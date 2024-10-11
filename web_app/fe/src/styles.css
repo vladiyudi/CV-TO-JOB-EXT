@@ -29,7 +29,7 @@ body {
 .input-container-wrapper {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   height: 70vh;
   background-color: white;
   border-radius: 8px;
