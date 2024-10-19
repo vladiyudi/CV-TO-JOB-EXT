@@ -8,7 +8,27 @@ async function createCV(req, res) {
     let { cvRaw } = res.locals;  
     if (!cvRaw) cvRaw = req.body.cvRaw;
 
-    const cvJSON = await generateCvJson(cvRaw);
+    let cvJSON = await generateCvJson(cvRaw);
+    let isValidJson = false;
+    let retryCount = 0;
+    const maxRetries = 3;
+
+    while (!isValidJson && retryCount < maxRetries) {
+      try {
+        JSON.parse(cvJSON);
+        isValidJson = true;
+      } catch (jsonError) {
+        console.error('Invalid JSON:', jsonError);
+        retryCount++;
+        if (retryCount < maxRetries) {
+          console.log(`Retrying generateCvJson (attempt ${retryCount + 1})`);
+          cvJSON = await generateCvJson(cvRaw);
+        } else {
+          throw new Error('Failed to generate valid JSON after multiple attempts');
+        }
+      }
+    }
+
     const cvJSONObject = JSON.parse(cvJSON);
     const name = capitalizeWords(cvJSONObject.personalInfo.name);
     const title = capitalizeWords(cvJSONObject.personalInfo.title);
@@ -30,8 +50,6 @@ async function createCV(req, res) {
 
     // Save the updated user document
     await user.save();
-
-    
     
     res.json({ cvJSON: jsonString, nameTitle: { name, title }, cvHTML });
 

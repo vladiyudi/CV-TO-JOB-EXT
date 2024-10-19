@@ -11,9 +11,9 @@ import { ListFade } from "./assets/ListFade";
 import { salesArgs } from './assets/copywriting';
 import { IconCloudDemo } from './assets/iconVloud';
 
+
 const Login = () => {
   const navigate = useNavigate();
-
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -60,23 +60,28 @@ const Login = () => {
   return (
     <div className="relative flex min-h-screen w-full flex-col items-center justify-between overflow-hidden bg-background">
     {/* <Meteors number={30} /> */}
-
+<div className='flex items-baseline justify-center'> 
+<img src="../../superCVlogo2.png" alt="Logo" className="h-16 w-16 mr-4" />
     <BlurIn
-      word="Get Hired with Ai-Powered CVs"
-      className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-900/80 bg-clip-text text-center text-7xl leading-none text-transparent dark:from-white dark:to-slate-900/100 rajdhani-regular mt-10"
+      word="Get Hired with Ai-Powered"
+      className="pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-900/80 bg-clip-text text-center text-7xl leading-none text-transparent dark:from-white dark:to-slate-900/100 rajdhani-regular mt-10 mr-4"
     />
+    <img src="../../superCVlogoSimplified.png" alt="Logo" className="h-16 w-16" />
+    </div>
     
     <div className="flex-grow flex items-center justify-center w-full">
       <div className="w-full flex items-center justify-evenly">
         <ListFade title={salesArgs[0].title} items={salesArgs[0].args} direction='left' />
         <div className="flex flex-col gap-4 items-center justify-center mt-4">
           <div className = "w-[400px] flex justify-center">
+ 
         <RainbowButton onClick={handleGoogleLogin}>
           <div className="flex items-center gap-2">
             <img src="../../g.png" alt="Google Logo" className="h-6 w-6" />
             <span className='rajdhani-light'>Login with Google</span>
           </div>
         </RainbowButton>
+    
         </div>
         <IconCloudDemo />
         </div>

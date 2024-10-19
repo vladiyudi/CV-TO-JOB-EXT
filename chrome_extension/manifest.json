@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "SuperCV",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Write tailored CV to any job on LinkedIn and generate PDF in seconds",
   "permissions": [
     "activeTab",
@@ -41,9 +41,9 @@
     "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' https://www.googleapis.com https://supercv.online;"
   },
   "icons": {
-    "16": "images/superCVlogoSimple.png",
-    "32": "images/superCVlogoSimple.png",
-    "48": "images/superCVlogoSimple.png",
-    "128": "images/superCVlogoSimple.png"
+    "16": "images/superCVlogo.png",
+    "32": "images/superCVlogo.png",
+    "48": "images/superCVlogo.png",
+    "128": "images/superCVlogo.png"
   }
 }

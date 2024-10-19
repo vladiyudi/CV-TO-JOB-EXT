@@ -82,7 +82,7 @@ export const JobInput = ({ job, setJob }) => {
         />
       </div>
       <div className="upload-button-container flex justify-end rajdhani-light">
-        <ShinyButton>Chrome Extension</ShinyButton>  
+        <ShinyButton onClick={() => window.open(`https://chromewebstore.google.com/detail/${import.meta.env.VITE_CHROME_EXTENSION_NAME}/${import.meta.env.VITE_CHROME_EXTENSION_ID}`)}>Chrome Extension</ShinyButton>  
       </div>
     </div>
   );

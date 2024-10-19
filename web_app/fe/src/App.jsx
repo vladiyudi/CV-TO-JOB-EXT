@@ -222,11 +222,15 @@ const MainApp = () => {
   };
 
   return (
+    <>
+         
     <div className="app-container">
       <Ripple/>
-      <div className="header" >
+      <div className="header relative" >
         <ShowDailyLimit refreshTrigger={refreshDailyLimit} />
+
         <h1 className="app-title rajdhani-regular ">Tailor CV to any job in a 3 steps:</h1>
+       
         <div>
         <ShinyButton onClick={handleLogout} className="rajdhani-light">Logout</ShinyButton>
         </div>
@@ -254,6 +258,7 @@ const MainApp = () => {
       </div>
       <a href="/privacy-policy" className='text-center rajdhani-light text-sm text-gray-500'>Privacy policy</a>
     </div>
+    </>
   );
 };
 

@@ -1,5 +1,6 @@
 function capitalizeWords(str) {
     // Split the string into an array of words
+    if (!str) return 'undefined';
     return str
       .split(' ')
       // Capitalize the first letter of each word and make the rest lowercase
